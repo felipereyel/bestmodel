@@ -1,0 +1,5 @@
+# Cloudflare Pages headers (ignored by GitHub Pages)
+/data/*
+  Cache-Control: public, max-age=300
+/index.html
+  Cache-Control: public, max-age=300

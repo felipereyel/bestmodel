@@ -1,8 +1,8 @@
 # Best value LLM
 
-Live: https://bestvaluemodel.terrydjony.workers.dev/ (Cloudflare) · https://terryds.github.io/bestvaluemodel/ (GitHub Pages mirror)
+Live: https://bestvaluemodel.terrydjony.workers.dev/
 
-A single static page that plots every model on the [Artificial Analysis](https://artificialanalysis.ai/) Intelligence Index against its blended API price and highlights the **value frontier** (models where nothing cheaper is also smarter). A GitHub Actions cron refreshes the data daily and redeploys to GitHub Pages only when something actually changed.
+A single static page that plots every model on the [Artificial Analysis](https://artificialanalysis.ai/) Intelligence Index against its blended API price and highlights the **value frontier** (models where nothing cheaper is also smarter). A GitHub Actions cron refreshes the data daily and redeploys to Cloudflare only when something actually changed.
 
 Inspired by [vps.sonnylab.com/model-value-2026-07](https://vps.sonnylab.com/model-value-2026-07.html), but data-driven instead of hand-maintained.
 
@@ -14,7 +14,7 @@ Inspired by [vps.sonnylab.com/model-value-2026-07](https://vps.sonnylab.com/mode
 | `data/models.json` | Trimmed snapshot of the AA `/data/llms/models` response. Ships with a hand-entered seed so the page renders before the first fetch. |
 | `data/changelog.json` | Per-run diff (added / removed / re-scored / re-priced), newest first, capped at 90 entries. Rendered in the "What changed" card. |
 | `scripts/fetch-aa.mjs` | Fetches the API, normalises, diffs against the previous snapshot, writes both files. Writes nothing if the data is identical. |
-| `.github/workflows/update-and-deploy.yml` | Daily cron + manual trigger + push to `main`. Fetch, commit if changed, deploy to GitHub Pages and Cloudflare. |
+| `.github/workflows/update-and-deploy.yml` | Daily cron + manual trigger + push to `main`. Fetch, commit if changed, deploy to Cloudflare Workers (static assets). |
 | `wrangler.jsonc`, `scripts/build.sh`, `_headers` | Cloudflare Workers static-assets config. `build.sh` copies the page, data and headers into `dist/`, which wrangler uploads. |
 
 ## Setup
@@ -29,15 +29,13 @@ Inspired by [vps.sonnylab.com/model-value-2026-07](https://vps.sonnylab.com/mode
    ```sh
    gh secret set AA_API_KEY
    ```
-4. Enable Pages with source **GitHub Actions** (Settings → Pages). The workflow also tries to enable it itself via `configure-pages`.
-5. Run the workflow once by hand so the seed data is replaced:
-   ```sh
-   gh workflow run update-and-deploy.yml
-   ```
-
-6. Cloudflare (optional, already live from a local `npm run deploy`): create an API token with the **Edit Cloudflare Workers** template at https://dash.cloudflare.com/profile/api-tokens and store it as the `CLOUDFLARE_API_TOKEN` secret. Without it the Cloudflare job is skipped and only GitHub Pages updates.
+4. Create a Cloudflare API token with the **Edit Cloudflare Workers** template at https://dash.cloudflare.com/profile/api-tokens and store it as a secret:
    ```sh
    gh secret set CLOUDFLARE_API_TOKEN
+   ```
+5. Run the workflow once by hand so the seed data is replaced and the first deploy happens:
+   ```sh
+   gh workflow run update-and-deploy.yml
    ```
 
 The cron runs at 06:17 UTC daily. Scheduled runs on a repo with no activity for 60 days get paused by GitHub; a manual run re-enables them.

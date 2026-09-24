@@ -1,0 +1,12 @@
+{
+  "name": "bestvaluemodel",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Which LLM is worth it: Artificial Analysis Intelligence Index vs blended API price, refreshed daily.",
+  "scripts": {
+    "fetch": "node scripts/fetch-aa.mjs",
+    "serve": "python3 -m http.server 8080"
+  },
+  "engines": { "node": ">=20" }
+}

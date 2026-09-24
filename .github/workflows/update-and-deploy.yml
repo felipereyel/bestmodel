@@ -1,4 +1,4 @@
-name: Update data & deploy to Cloudflare
+name: Update data & deploy to GitHub Pages
 
 on:
   schedule:
@@ -49,33 +49,26 @@ jobs:
           git push
           echo "changed=true" >> "$GITHUB_OUTPUT"
 
-  cloudflare:
+  pages:
     needs: update
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || needs.update.outputs.changed == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
         with:
           ref: main
-      - name: Require Cloudflare token
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: |
-          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
-            echo "::error::CLOUDFLARE_API_TOKEN secret is not set; nothing to deploy to."
-            exit 1
-          fi
-      - uses: actions/setup-node@v4
+      - name: Build the site
+        run: sh scripts/build.sh
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
         with:
-          node-version: 22
-      - name: Install pinned wrangler and build dist/
-        run: |
-          npm ci
-          sh scripts/build.sh
-      - name: Deploy to Cloudflare Workers (static assets)
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: 4b4ca92e0adcba79ab45737c3c2ca444
-          wranglerVersion: "4.138.0"
-          command: deploy
+          path: dist
+      - id: deploy
+        uses: actions/deploy-pages@v4

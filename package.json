@@ -7,14 +7,9 @@
   "scripts": {
     "fetch": "node scripts/fetch-aa.mjs",
     "build": "sh scripts/build.sh",
-    "serve": "python3 -m http.server 8080",
-    "deploy": "npm run build && wrangler deploy",
-    "preview": "wrangler dev"
+    "serve": "python3 -m http.server 8080"
   },
   "engines": {
     "node": ">=20"
-  },
-  "devDependencies": {
-    "wrangler": "^4.138.0"
   }
 }

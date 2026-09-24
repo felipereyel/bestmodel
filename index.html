@@ -54,6 +54,17 @@
   .btn:hover { background: var(--wash); color: var(--ink); }
   .hdr-actions { display: flex; gap: 8px; flex: none; margin-top: 6px; }
 
+  /* top-level tabs */
+  .tabs { display: flex; gap: 6px; margin: 0 0 22px; border-bottom: 1px solid var(--line); }
+  .tabs button {
+    font-family: var(--serif); font: inherit; font-size: 17px; font-weight: 500; line-height: 1.2;
+    padding: 8px 4px 12px; margin-right: 22px; border: 0; border-bottom: 2px solid transparent;
+    background: transparent; color: var(--ink-3); cursor: pointer;
+  }
+  .tabs button:hover { color: var(--ink); }
+  .tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+  [hidden] { display: none !important; }
+
   /* filters: one row above everything */
   .filters {
     display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center;
@@ -137,6 +148,10 @@
   tr.on td:first-child { font-weight: 600; }
   tr.on td:first-child::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-right: 8px; vertical-align: 1px; }
   .na { color: var(--ink-3); }
+  .tag {
+    display: inline-block; font-size: 11px; padding: 1px 7px; border-radius: 999px; margin-left: 6px;
+    background: var(--accent-soft); color: var(--accent-ink); font-weight: 500; vertical-align: 1px;
+  }
   td a { color: var(--ink); text-decoration: none; }
   td a:hover { color: var(--accent-ink); text-decoration: underline; }
   table.budget { min-width: 640px; }
@@ -185,10 +200,16 @@
     <p class="meta" id="meta">Loading data…</p>
   </div>
   <div class="hdr-actions">
-    <a class="btn" href="https://github.com/terryds/bestvaluemodel" rel="noopener">GitHub</a>
+    <a class="btn" href="https://github.com/felipereyel/bestmodel" rel="noopener">GitHub</a>
     </div>
 </header>
 
+<div class="tabs" role="tablist" aria-label="View">
+  <button type="button" role="tab" id="tabApi" aria-selected="true" aria-controls="viewApi">API value</button>
+  <button type="button" role="tab" id="tabSelf" aria-selected="false" aria-controls="viewSelf">Self-host</button>
+</div>
+
+<div id="viewApi" role="tabpanel" aria-labelledby="tabApi">
 <div class="filters" id="filters">
   <div class="seg" role="group" aria-label="Capability metric" id="metricSeg">
     <button type="button" data-metric="index" aria-pressed="true">Intelligence</button>
@@ -271,9 +292,95 @@
       <li><b>"Min score"</b> hides models below that index from both the chart and the frontier calculation, so an old, tiny model at a rock-bottom price does not anchor the line.</li>
       <li><b>Scores move.</b> AA re-bases the Index between versions, so compare against this page only, not against an older snapshot.</li>
     </ul>
-    <p style="margin-top:14px">Source: <a href="https://artificialanalysis.ai/" rel="noopener">Artificial Analysis</a> free data API, fetched daily by a GitHub Actions cron. Code and data: <a href="https://github.com/terryds/bestvaluemodel" rel="noopener">github.com/terryds/bestvaluemodel</a>. <span id="src"></span></p>
+    <p style="margin-top:14px">Source: <a href="https://artificialanalysis.ai/" rel="noopener">Artificial Analysis</a> free data API, fetched daily by a GitHub Actions cron. Code and data: <a href="https://github.com/felipereyel/bestmodel" rel="noopener">github.com/felipereyel/bestmodel</a>. <span id="src"></span></p>
   </div>
 </div>
+</div><!-- /viewApi -->
+
+<div id="viewSelf" role="tabpanel" aria-labelledby="tabSelf" hidden>
+
+<div class="filters" id="sfilters">
+  <div class="seg" role="group" aria-label="Capability metric" id="sMetricSeg">
+    <button type="button" data-metric="index" aria-pressed="true">Intelligence</button>
+    <button type="button" data-metric="coding" aria-pressed="false">Coding</button>
+    <button type="button" data-metric="math" aria-pressed="false">Math</button>
+  </div>
+  <label>Min score <input type="range" id="sMinIdx" min="0" max="50" step="5" value="10" aria-label="Minimum index"> <span id="sMinIdxVal">10</span></label>
+  <label title="Keep only the best-scoring variant of each model"><input type="checkbox" id="sCollapse" checked> One row per model</label>
+  <label>Maker <select id="sMakerSel"><option value="">All</option></select></label>
+  <label><input type="search" id="sSearch" placeholder="Search model…" aria-label="Search model"></label>
+  <label title="Only show models whose weights are published"><input type="checkbox" id="sOpenOnly" checked> Open weights only</label>
+  <label><input type="checkbox" id="sFrontierOnly"> Frontier only</label>
+  <label><input type="checkbox" id="sLabelsAll"> Label every point</label>
+  <span class="count" id="sCount"></span>
+</div>
+
+<div class="card">
+  <h2 id="scatterTitle2">What can I run at each memory budget</h2>
+  <p class="cap" id="scatterCap2">Every open-weights model with a published parameter count, plotted as <b>Artificial Analysis Intelligence Index</b> against <b>total parameters</b> (log scale, a proxy for the memory needed to hold the weights). Models on the <b>self-host frontier</b> are the best you can run at their size: nothing smaller is also smarter. The vertical lines mark common memory bands.</p>
+  <svg id="scatter2" viewBox="0 0 960 540" role="img" aria-label="Scatter plot of intelligence index versus total parameters"></svg>
+  <div class="legend">
+    <span><i class="key" style="background:var(--accent)"></i>On the self-host frontier</span>
+    <span><i class="key" style="background:var(--demote)"></i>Dominated: a smaller model matches or beats it</span>
+    <span><i class="key line" style="background:var(--accent)"></i>Self-host frontier</span>
+    <span><i class="key line" style="background:var(--grid);height:12px;width:1px"></i>Memory band</span>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Best model per memory band</h2>
+  <p class="cap">Assumes ~4-bit quantisation, where the weights need roughly <b>0.55&nbsp;GB per billion parameters</b> (rule of thumb; add room for context/KV cache). Find the band your machine falls in; the pick is the highest-scoring model that fits within that much memory, and the runner-up is the next best.</p>
+  <div class="tbl-wrap">
+    <table id="sbands" class="budget">
+      <thead><tr><th>Memory band (weights)</th><th>Fits</th><th>Pick</th><th>Score</th><th>Runner-up</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <h2 id="sbarTitle">Raw capability</h2>
+  <p class="cap">Ignoring size entirely. Useful to see what the frontier gives up by staying small.</p>
+  <div class="rows" id="sbar"></div>
+  <button class="btn more" id="sbarMore" type="button" hidden></button>
+</div>
+
+<div class="card">
+  <h2>All open-weights figures</h2>
+  <p class="cap">Click a column header to sort. Names link to the model's Artificial Analysis page.</p>
+  <div class="tbl-wrap">
+    <table id="stbl">
+      <thead><tr>
+        <th data-k="name" aria-sort="none">Model</th>
+        <th data-k="creator" aria-sort="none">Maker</th>
+        <th data-k="index" aria-sort="descending">Intelligence</th>
+        <th data-k="coding" aria-sort="none">Coding</th>
+        <th data-k="math" aria-sort="none">Math</th>
+        <th data-k="params" aria-sort="none">Params B</th>
+        <th data-k="active_params" aria-sort="none">Active B</th>
+        <th data-k="context" aria-sort="none">Context</th>
+        <th data-k="license" aria-sort="none">License</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <h2>How to read this</h2>
+  <div class="note">
+    <ul>
+      <li><b>Self-host frontier.</b> Sort by total parameters ascending and keep every model that scores higher than everything smaller. It answers "what is the best model I can run on a machine of this size".</li>
+      <li><b>Parameters ≠ memory exactly.</b> Total parameters are a rough proxy. Real memory depends on quantisation (4-bit is ~0.55&nbsp;GB/B, 8-bit ~1.1&nbsp;GB/B, fp16 ~2&nbsp;GB/B) plus context and KV cache. The band table uses the 4-bit rule of thumb plus a headroom allowance.</li>
+      <li><b>Active parameters</b> are the parameters executed per token for Mixture-of-Experts models. They drive speed and compute, not the memory needed to hold the weights, which is set by total parameters.</li>
+      <li><b>Open weights only</b> hides models whose weights are not published. Untick it to include closed models as a "what if you could self-host" reference.</li>
+      <li>Parameter counts and the open-weights flag come from Artificial Analysis model metadata; the free data API does not expose them directly, so they are read from the model pages and refreshed daily alongside the scores.</li>
+    </ul>
+    <p style="margin-top:14px">Source: <a href="https://artificialanalysis.ai/" rel="noopener">Artificial Analysis</a>. <span id="src2"></span></p>
+  </div>
+</div>
+
+</div><!-- /viewSelf -->
 
 <div class="tip" id="tip" role="status" aria-live="polite"></div>
 </div>
@@ -302,10 +409,13 @@
   }
 
   const ALL = snapshot.models.filter((m) => m.blended > 0);
+  const OPEN = snapshot.models.filter((m) => m.params != null && (m.open_weights === true || m.open_weights == null));
   const dt = new Date(snapshot.fetched_at);
   const when = isNaN(dt) ? snapshot.fetched_at : dt.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
-  $("meta").textContent = `${ALL.length} models · data as of ${when}` + (snapshot.source === "seed" ? " · seed snapshot (waiting for the first API fetch)" : " · source: artificialanalysis.ai");
+  const openCount = snapshot.models.filter((m) => m.open_weights === true).length;
+  $("meta").textContent = `${ALL.length} models · ${openCount} open weights · data as of ${when}` + (snapshot.source === "seed" ? " · seed snapshot (waiting for the first API fetch)" : " · source: artificialanalysis.ai");
   $("src").textContent = snapshot.attribution || "";
+  $("src2").textContent = snapshot.attribution || "";
 
   /* ---------- state ---------- */
   const state = { metric: "index", minIdx: 30, collapse: true, maker: "", q: "", frontierOnly: false, labelsAll: false, showAllIndex: false, sortK: "index", sortDir: -1 };
@@ -325,12 +435,17 @@
     });
   }
   ALL.forEach((m) => { m.short = shortName(m.name); m.base = baseName(m.name); });
+  OPEN.forEach((m) => { if (m.short == null) { m.short = shortName(m.name); m.base = baseName(m.name); } m.v = null; });
 
   const makers = [...new Set(ALL.map((m) => m.creator))].sort((a, b) => a.localeCompare(b));
   makers.forEach((mk) => { const o = h("option", null, mk); o.value = mk; $("makerSel").appendChild(o); });
 
+  const sMakers = [...new Set(OPEN.map((m) => m.creator))].sort((a, b) => a.localeCompare(b));
+  sMakers.forEach((mk) => { const o = h("option", null, mk); o.value = mk; $("sMakerSel").appendChild(o); });
+
   const hasMetric = (k) => ALL.some((m) => m[k] != null);
   document.querySelectorAll("#metricSeg button").forEach((b) => { if (!hasMetric(b.dataset.metric)) { b.disabled = true; b.title = "Not in this snapshot yet"; b.style.opacity = .45; } });
+  document.querySelectorAll("#sMetricSeg button").forEach((b) => { if (!OPEN.some((m) => m[b.dataset.metric] != null)) { b.disabled = true; b.title = "Not in this snapshot yet"; b.style.opacity = .45; } });
 
   /* ---------- derive ---------- */
   function compute() {
@@ -577,6 +692,239 @@
     });
   }
 
+  /* ---------- self-host: state, derive, render ---------- */
+  const sstate = { metric: "index", minIdx: 10, collapse: true, maker: "", q: "", openOnly: true, frontierOnly: false, labelsAll: false, showAll: false, sortK: "index", sortDir: -1 };
+
+  function sCompute() {
+    const k = sstate.metric;
+    let rows = OPEN.filter((m) => m[k] != null && m[k] >= sstate.minIdx).map((m) => ({ ...m, v: m[k] }));
+    if (sstate.openOnly) rows = rows.filter((m) => m.open_weights === true);
+    if (sstate.collapse) {
+      const best = new Map();
+      rows.forEach((d) => { const b = best.get(d.base); if (!b || d.v > b.v || (d.v === b.v && d.params < b.params)) best.set(d.base, d); });
+      rows = [...best.values()];
+    }
+    rows.forEach((d) => { d.label = sstate.collapse ? d.base : d.short; });
+    // frontier: sort by size ascending, keep models that beat everything smaller
+    const frontier = [];
+    [...rows].sort((a, b) => a.params - b.params || b.v - a.v).forEach((d) => {
+      if (!frontier.length || d.v > frontier[frontier.length - 1].v) frontier.push(d);
+    });
+    const onF = new Set(frontier.map((d) => d.id));
+    rows.forEach((d) => (d.front = onF.has(d.id)));
+    const q = sstate.q.trim().toLowerCase();
+    const vis = rows.filter((d) => (!sstate.maker || d.creator === sstate.maker) && (!q || d.name.toLowerCase().includes(q) || d.creator.toLowerCase().includes(q)) && (!sstate.frontierOnly || d.front));
+    return { rows, vis, frontier };
+  }
+
+  const GB_PER_B = 0.55; // 4-bit weights rule of thumb
+  const MEM_BANDS = [
+    { label: "≤ 8 GB", max: 8 / GB_PER_B },
+    { label: "8–16 GB", max: 16 / GB_PER_B },
+    { label: "16–24 GB", max: 24 / GB_PER_B },
+    { label: "24–48 GB", max: 48 / GB_PER_B },
+    { label: "48–96 GB", max: 96 / GB_PER_B },
+    { label: "96–256 GB", max: 256 / GB_PER_B },
+    { label: "256+ GB", max: Infinity },
+  ];
+
+  function drawScatter2(rows, vis, frontier) {
+    const svg = $("scatter2"); svg.replaceChildren();
+    const W = 960, H = 540, M = { t: 26, r: 40, b: 56, l: 62 };
+    const pw = W - M.l - M.r, ph = H - M.t - M.b;
+    if (!vis.length) { const t = el("text", { x: W / 2, y: H / 2, "text-anchor": "middle", class: "tick" }); t.textContent = "No models match these filters."; svg.appendChild(t); return; }
+
+    const xs = rows.map((d) => d.params), ys = rows.map((d) => d.v);
+    const xmin = Math.min(...xs) / 1.6, xmax = Math.max(...xs) * 1.6;
+    const x0 = Math.log10(xmin), x1 = Math.log10(xmax);
+    const ystep = 5;
+    const y0 = Math.floor((Math.min(...ys) - 2) / ystep) * ystep, y1 = Math.ceil((Math.max(...ys) + 2) / ystep) * ystep;
+    const X = (v) => M.l + (Math.log10(v) - x0) / (x1 - x0) * pw;
+    const Y = (v) => M.t + ph - (v - y0) / (y1 - y0) * ph;
+
+    for (let v = y0; v <= y1; v += ystep) {
+      svg.appendChild(el("line", { x1: M.l, x2: M.l + pw, y1: Y(v), y2: Y(v), stroke: "var(--grid)", "stroke-width": 1 }));
+      const t = el("text", { x: M.l - 12, y: Y(v) + 4, "text-anchor": "end", class: "tick" }); t.textContent = v; svg.appendChild(t);
+    }
+    // vertical memory bands (params that fit a given GB budget at 4-bit), labelled at the top
+    MEM_BANDS.slice(0, -1).forEach((band) => {
+      const p = band.max;
+      if (p < xmin || p > xmax) return;
+      svg.appendChild(el("line", { x1: X(p), x2: X(p), y1: M.t, y2: M.t + ph, stroke: "var(--line)", "stroke-width": 1, "stroke-dasharray": "3 4" }));
+    });
+    niceLogTicks(xmin, xmax).forEach((v) => {
+      svg.appendChild(el("line", { x1: X(v), x2: X(v), y1: M.t, y2: M.t + ph, stroke: "var(--grid)", "stroke-width": 1 }));
+      const t = el("text", { x: X(v), y: M.t + ph + 22, "text-anchor": "middle", class: "tick" }); t.textContent = v >= 1000 ? (v / 1000) + "T" : v + "B"; svg.appendChild(t);
+    });
+    svg.appendChild(el("line", { x1: M.l, x2: M.l + pw, y1: M.t + ph, y2: M.t + ph, stroke: "var(--axis)", "stroke-width": 1 }));
+    const xt = el("text", { x: M.l + pw / 2, y: M.t + ph + 46, "text-anchor": "middle", class: "axis-title" }); xt.textContent = "Total parameters (billions, log scale) ≈ memory to hold the weights"; svg.appendChild(xt);
+    const yt = el("text", { x: 16, y: M.t + ph / 2, "text-anchor": "middle", class: "axis-title", transform: `rotate(-90 16 ${M.t + ph / 2})` }); yt.textContent = "Artificial Analysis " + METRIC_LABEL[sstate.metric]; svg.appendChild(yt);
+
+    const pts = frontier.map((d) => `${X(d.params)},${Y(d.v)}`).join(" ");
+    svg.appendChild(el("polyline", { points: pts, fill: "none", stroke: "var(--accent)", "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round", opacity: .38 }));
+
+    const ordered = [...vis].sort((a, b) => (a.front ? 1 : 0) - (b.front ? 1 : 0));
+    const placed = [];
+    const labelLayer = el("g");
+    const dots = vis.map((o) => ({ bx: X(o.params) - 8, by: Y(o.v) - 8, w: 16, h: 16 }));
+    const byPriority = [...vis].sort((a, b) => (b.front ? 1 : 0) - (a.front ? 1 : 0) || b.v - a.v);
+
+    ordered.forEach((d) => {
+      const cx = X(d.params), cy = Y(d.v), c = d.front ? "var(--accent)" : "var(--demote)";
+      svg.appendChild(el("circle", { cx, cy, r: 7.5, fill: "var(--surface)" }));
+      svg.appendChild(el("circle", { cx, cy, r: 5.5, fill: c }));
+      const hit = el("circle", { cx, cy, r: 14, fill: "transparent", class: "hit", tabindex: "0", role: "img", "aria-label": `${d.short}: ${METRIC_LABEL[sstate.metric]} ${num(d.v, 1)}, ${num(d.params, 1)}B parameters` });
+      hit.style.cursor = "pointer";
+      const ring = el("circle", { cx, cy, r: 10, class: "focus-ring" });
+      bindHover2(hit, d, () => { const b = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal; return [b.left + cx / vb.width * b.width, b.top + cy / vb.height * b.height]; });
+      svg.append(hit, ring);
+    });
+
+    byPriority.forEach((d) => {
+      const cx = X(d.params), cy = Y(d.v);
+      const w = d.label.length * 6.3 + 6, hgt = 13;
+      const cands = [
+        { x: cx, y: cy - 12, anc: "middle", bx: cx - w / 2, by: cy - 12 - hgt },
+        { x: cx + 11, y: cy + 4, anc: "start", bx: cx + 11, by: cy + 4 - hgt },
+        { x: cx - 11, y: cy + 4, anc: "end", bx: cx - 11 - w, by: cy + 4 - hgt },
+        { x: cx, y: cy + 20, anc: "middle", bx: cx - w / 2, by: cy + 20 - hgt },
+      ];
+      const clash = (b) => placed.concat(dots).some((p) => b.bx < p.bx + p.w && b.bx + w > p.bx && b.by < p.by + p.h && b.by + hgt > p.by) || b.bx < 0 || b.bx + w > W;
+      const pick = cands.find((cnd) => !clash(cnd));
+      if (!pick && !d.front && !sstate.labelsAll) return;
+      const p = pick || cands[0];
+      placed.push({ bx: p.bx, by: p.by, w, h: hgt });
+      const lb = el("text", { x: p.x, y: p.y, "text-anchor": p.anc, class: "pt-label" + (d.front ? " on" : "") });
+      lb.textContent = d.label; labelLayer.appendChild(lb);
+    });
+    svg.appendChild(labelLayer);
+  }
+
+  function tipHTML2(d) {
+    tip.replaceChildren();
+    const head = h("div", "tip-h");
+    const k = h("i", "key"); k.style.background = d.front ? "var(--accent)" : "var(--demote)";
+    head.append(k, document.createTextNode(d.short));
+    tip.appendChild(head);
+    if (d.short !== d.name) { const full = h("div", null, d.name); full.style.cssText = "color:var(--ink-3);font-size:11px;margin:-4px 0 7px"; tip.appendChild(full); }
+    const rows = [
+      [METRIC_LABEL[sstate.metric], num(d.v, 1)],
+      ["Total params", num(d.params, 1) + "B"],
+    ];
+    if (d.active_params != null) rows.push(["Active params", num(d.active_params, 1) + "B"]);
+    rows.push(["Weights ≈", num(d.params * GB_PER_B, 1) + " GB @ 4-bit"]);
+    if (d.context != null) rows.push(["Context", num(d.context / 1000, 0) + "k tokens"]);
+    if (d.license) rows.push(["License", d.license]);
+    rows.push(["Maker", d.creator]);
+    rows.forEach(([lab, val]) => {
+      const r = h("div", "tip-r"); r.append(h("span", null, lab), h("b", null, val)); tip.appendChild(r);
+    });
+    const s = h("div", "tip-r"); const st = h("span", null, d.front ? "On self-host frontier" : "Dominated");
+    st.style.color = d.front ? "var(--accent)" : "var(--ink-3)"; st.style.fontWeight = "600"; s.appendChild(st); tip.appendChild(s);
+  }
+  const tipShow2 = (e, d) => { tipHTML2(d); place(e.clientX, e.clientY); };
+  function bindHover2(node, d, focusPos) {
+    node.addEventListener("pointerenter", (e) => tipShow2(e, d));
+    node.addEventListener("pointermove", (e) => tipShow2(e, d));
+    node.addEventListener("pointerleave", tipHide);
+    node.addEventListener("focus", () => { tipHTML2(d); const [x, y] = focusPos(); place(x, y); });
+    node.addEventListener("blur", tipHide);
+  }
+
+  function sBands(vis) {
+    const tb = document.querySelector("#sbands tbody"); tb.replaceChildren();
+    const pick = vis.filter((d) => d.open_weights === true);
+    if (!pick.length) { const tr = h("tr"); tr.appendChild(h("td", "empty", "No open-weights models match these filters.")); tb.appendChild(tr); return; }
+    // Each band is cumulative: "best model that fits within this much memory", so a
+    // smaller top model still wins every larger band it qualifies for.
+    MEM_BANDS.forEach((band) => {
+      const pool = pick.filter((d) => d.params <= band.max);
+      const tr = h("tr");
+      tr.appendChild(h("td", null, band.label));
+      tr.appendChild(h("td", "na", band.max === Infinity ? "any size" : `up to ${num(band.max, 0)}B`));
+      if (!pool.length) {
+        for (let c = 0; c < 3; c++) tr.appendChild(h("td", "na", c === 0 ? "nothing fits" : "—"));
+        tb.appendChild(tr); return;
+      }
+      const ranked = [...pool].sort((a, b) => b.v - a.v || a.params - b.params);
+      const best = ranked[0], ru = ranked[1];
+      const ptd = h("td", "pick"); ptd.title = best.name;
+      if (best.url) { const a = h("a", null, best.label); a.href = best.url; a.target = "_blank"; a.rel = "noopener"; ptd.appendChild(a); } else ptd.textContent = best.label;
+      ptd.appendChild(h("span", "tag", num(best.params, 0) + "B"));
+      tr.appendChild(ptd);
+      tr.appendChild(h("td", null, num(best.v, 1)));
+      const rtd = h("td", "ru");
+      if (ru) { rtd.append(h("b", null, ru.label), document.createTextNode(` · ${num(ru.v, 1)} at ${num(ru.params, 0)}B`)); rtd.title = ru.name; } else { rtd.textContent = "—"; rtd.classList.add("na"); }
+      tr.appendChild(rtd);
+      tb.appendChild(tr);
+    });
+  }
+
+  function sTable(vis) {
+    const tb = document.querySelector("#stbl tbody"); tb.replaceChildren();
+    const k = sstate.sortK, dir = sstate.sortDir;
+    const sorted = [...vis].sort((a, b) => {
+      const av = a[k], bv = b[k];
+      if (av == null && bv == null) return 0; if (av == null) return 1; if (bv == null) return -1;
+      return typeof av === "string" ? av.localeCompare(bv) * dir : (av - bv) * dir;
+    });
+    sorted.forEach((d) => {
+      const tr = h("tr", d.front ? "on" : "");
+      const nameTd = h("td"); nameTd.title = d.name;
+      if (d.url) { const a = h("a", null, d.short); a.href = d.url; a.target = "_blank"; a.rel = "noopener"; nameTd.appendChild(a); } else nameTd.textContent = d.short;
+      if (d.open_weights === true) nameTd.appendChild(h("span", "tag", "open"));
+      tr.appendChild(nameTd);
+      const cells = [d.creator, num(d.index, 1), num(d.coding, 1), num(d.math, 1), num(d.params, 1), num(d.active_params, 1), d.context != null ? num(d.context / 1000, 0) + "k" : "—", d.license || "—"];
+      cells.forEach((c) => tr.appendChild(h("td", c === "—" ? "na" : "", c)));
+      tb.appendChild(tr);
+    });
+    document.querySelectorAll("#stbl th").forEach((th) => th.setAttribute("aria-sort", th.dataset.k === k ? (dir > 0 ? "ascending" : "descending") : "none"));
+  }
+  document.querySelectorAll("#stbl th").forEach((th) => th.addEventListener("click", () => {
+    const k = th.dataset.k;
+    if (sstate.sortK === k) sstate.sortDir *= -1; else { sstate.sortK = k; sstate.sortDir = (k === "name" || k === "creator" || k === "license") ? 1 : -1; }
+    sRender();
+  }));
+
+  function sRender() {
+    tipHide();
+    const { rows, vis, frontier } = sCompute();
+    $("sCount").textContent = `${vis.length} of ${rows.length} models · ${frontier.length} on frontier`;
+    $("scatterTitle2").textContent = `What can I run at each memory budget: ${METRIC_LABEL[sstate.metric]}`;
+    $("sbarTitle").textContent = `Raw capability: ${METRIC_LABEL[sstate.metric]}`;
+    drawScatter2(rows, vis, frontier);
+    sBands(vis);
+    bars("sbar", "sbarMore", [...vis].sort((a, b) => b.v - a.v || a.params - b.params), "v", (v) => num(v, 1), sstate.showAll, () => { sstate.showAll = !sstate.showAll; sRender(); });
+    sTable(vis);
+  }
+
+  document.querySelectorAll("#sMetricSeg button").forEach((b) => b.addEventListener("click", () => {
+    sstate.metric = b.dataset.metric;
+    document.querySelectorAll("#sMetricSeg button").forEach((o) => o.setAttribute("aria-pressed", o === b ? "true" : "false"));
+    sRender();
+  }));
+  $("sMinIdx").addEventListener("input", (e) => { sstate.minIdx = +e.target.value; $("sMinIdxVal").textContent = e.target.value; sRender(); });
+  $("sCollapse").addEventListener("change", (e) => { sstate.collapse = e.target.checked; sRender(); });
+  $("sMakerSel").addEventListener("change", (e) => { sstate.maker = e.target.value; sRender(); });
+  $("sSearch").addEventListener("input", (e) => { sstate.q = e.target.value; sRender(); });
+  $("sOpenOnly").addEventListener("change", (e) => { sstate.openOnly = e.target.checked; sRender(); });
+  $("sFrontierOnly").addEventListener("change", (e) => { sstate.frontierOnly = e.target.checked; sRender(); });
+  $("sLabelsAll").addEventListener("change", (e) => { sstate.labelsAll = e.target.checked; sRender(); });
+
+  /* ---------- tabs ---------- */
+  let selfRendered = false;
+  function showTab(which) {
+    const api = which === "api";
+    $("viewApi").hidden = !api;
+    $("viewSelf").hidden = api;
+    $("tabApi").setAttribute("aria-selected", api ? "true" : "false");
+    $("tabSelf").setAttribute("aria-selected", api ? "false" : "true");
+    if (!api) { tipHide(); if (!selfRendered) { selfRendered = true; sRender(); } }
+    location.hash = api ? "" : "self-host";
+  }
+  $("tabApi").addEventListener("click", () => showTab("api"));
+  $("tabSelf").addEventListener("click", () => showTab("self"));
+
   /* ---------- render ---------- */
   function render() {
     tipHide();
@@ -604,6 +952,7 @@
 
   log();
   render();
+  if (location.hash === "#self-host") showTab("self");
 
 })();
 </script>

@@ -94,13 +94,16 @@ jobs:
         if: steps.cf.outputs.skip == 'false'
         with:
           node-version: 22
-      - name: Build dist/
+      - name: Install pinned wrangler and build dist/
         if: steps.cf.outputs.skip == 'false'
-        run: sh scripts/build.sh
+        run: |
+          npm ci
+          sh scripts/build.sh
       - name: Deploy to Cloudflare Workers (static assets)
         if: steps.cf.outputs.skip == 'false'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: 4b4ca92e0adcba79ab45737c3c2ca444
+          wranglerVersion: "4.138.0"
           command: deploy

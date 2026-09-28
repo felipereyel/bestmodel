@@ -1,5 +1,23 @@
 [
   {
+    "date": "2026-09-28",
+    "added": [],
+    "removed": [],
+    "changed": [
+      {
+        "name": "MiMo-V2.6-Flash",
+        "creator": "Xiaomi",
+        "fields": [
+          {
+            "field": "params",
+            "from": null,
+            "to": 309
+          }
+        ]
+      }
+    ]
+  },
+  {
     "date": "2026-09-27",
     "added": [
       {

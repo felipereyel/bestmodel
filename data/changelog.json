@@ -1,5 +1,23 @@
 [
   {
+    "date": "2026-10-05",
+    "added": [],
+    "removed": [],
+    "changed": [
+      {
+        "name": "A.X-K2",
+        "creator": "SK Telecom",
+        "fields": [
+          {
+            "field": "index",
+            "from": 22.7,
+            "to": 21.5
+          }
+        ]
+      }
+    ]
+  },
+  {
     "date": "2026-10-03",
     "added": [
       {

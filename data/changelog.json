@@ -1,5 +1,56 @@
 [
   {
+    "date": "2026-10-06",
+    "added": [
+      {
+        "name": "Mistral Large 4 Preview",
+        "creator": "Mistral",
+        "index": 38.4,
+        "blended": 2.065
+      }
+    ],
+    "removed": [],
+    "changed": [
+      {
+        "name": "DeepSeek V4 Pro 0813 (Non-reasoning)",
+        "creator": "DeepSeek",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 1.427,
+            "to": 1.98
+          },
+          {
+            "field": "input",
+            "from": 0.91,
+            "to": 1.32
+          },
+          {
+            "field": "output",
+            "from": 2.98,
+            "to": 3.96
+          }
+        ]
+      },
+      {
+        "name": "Gemma 4 31B (Non-reasoning)",
+        "creator": "Google",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.205,
+            "to": 0.212
+          },
+          {
+            "field": "input",
+            "from": 0.14,
+            "to": 0.15
+          }
+        ]
+      }
+    ]
+  },
+  {
     "date": "2026-10-05",
     "added": [],
     "removed": [],

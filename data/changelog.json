@@ -1,5 +1,1310 @@
 [
   {
+    "date": "2026-10-20",
+    "added": [
+      {
+        "name": "Agnes 2.5 Pro Beta",
+        "creator": "Sapiens AI",
+        "index": 35.2,
+        "blended": 0.15
+      },
+      {
+        "name": "Beam 1.0",
+        "creator": "Reflection",
+        "index": 30.3,
+        "blended": 1.05
+      },
+      {
+        "name": "Claude Haiku 5.5 (High)",
+        "creator": "Anthropic",
+        "index": 37.8,
+        "blended": 0.2
+      },
+      {
+        "name": "Claude Haiku 5.5 (Low)",
+        "creator": "Anthropic",
+        "index": 29.5,
+        "blended": 0.2
+      },
+      {
+        "name": "Claude Haiku 5.5 (Max)",
+        "creator": "Anthropic",
+        "index": 43.4,
+        "blended": 0.2
+      },
+      {
+        "name": "Claude Haiku 5.5 (Medium)",
+        "creator": "Anthropic",
+        "index": 34.5,
+        "blended": 0.2
+      },
+      {
+        "name": "Claude Haiku 5.5 (Xhigh)",
+        "creator": "Anthropic",
+        "index": 41.2,
+        "blended": 0.2
+      },
+      {
+        "name": "DeepSeek V4.1 Flash 1017 (Max)",
+        "creator": "DeepSeek",
+        "index": 45.1,
+        "blended": 0.525
+      },
+      {
+        "name": "MiniMax-M3.1-Flash",
+        "creator": "MiniMax",
+        "index": 42.7,
+        "blended": 0.262
+      },
+      {
+        "name": "Muse Spark Open (Xhigh)",
+        "creator": "Meta",
+        "index": 38.9,
+        "blended": 2
+      },
+      {
+        "name": "Muse Wonder (Max)",
+        "creator": "Meta",
+        "index": 52.4,
+        "blended": 8
+      },
+      {
+        "name": "Nemotron 3.5 Bolt 74B-A9B",
+        "creator": "NVIDIA",
+        "index": 21.4,
+        "blended": null
+      },
+      {
+        "name": "Nemotron 3.5 Super VL",
+        "creator": "NVIDIA",
+        "index": 26.5,
+        "blended": 0.313
+      },
+      {
+        "name": "Solar Pro 4",
+        "creator": "Upstage",
+        "index": 26.6,
+        "blended": 0.525
+      }
+    ],
+    "removed": [
+      {
+        "name": "KAT Coder Pro V2",
+        "creator": "KwaiKAT",
+        "index": 21.7,
+        "blended": 0.525
+      },
+      {
+        "name": "Nova 2.0 Omni (Low)",
+        "creator": "Amazon",
+        "index": 11.1,
+        "blended": 0.85
+      },
+      {
+        "name": "Nova 2.0 Omni (Medium)",
+        "creator": "Amazon",
+        "index": 13.6,
+        "blended": 0.85
+      },
+      {
+        "name": "Nova 2.0 Omni (Non-reasoning)",
+        "creator": "Amazon",
+        "index": 8.2,
+        "blended": 0.85
+      },
+      {
+        "name": "Qwen3 Max",
+        "creator": "Alibaba",
+        "index": 15.6,
+        "blended": 2.4
+      },
+      {
+        "name": "Qwen3 Max (Preview)",
+        "creator": "Alibaba",
+        "index": 12.6,
+        "blended": 2.4
+      },
+      {
+        "name": "Qwen3 Max Thinking (Preview)",
+        "creator": "Alibaba",
+        "index": 16.3,
+        "blended": 2.4
+      },
+      {
+        "name": "Qwen3.6 Max Preview",
+        "creator": "Alibaba",
+        "index": 28.4,
+        "blended": 2.925
+      },
+      {
+        "name": "Solar Pro 4",
+        "creator": "Upstage",
+        "index": 28.2,
+        "blended": 0.525
+      }
+    ],
+    "changed": [
+      {
+        "name": "Apertus 70B Instruct",
+        "creator": "Swiss AI Initiative",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 1.345,
+            "to": null
+          },
+          {
+            "field": "input",
+            "from": 0.82,
+            "to": null
+          },
+          {
+            "field": "output",
+            "from": 2.92,
+            "to": null
+          }
+        ]
+      },
+      {
+        "name": "DeepSeek V4 Flash 0420 (High)",
+        "creator": "DeepSeek",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.143,
+            "to": 0.142
+          },
+          {
+            "field": "output",
+            "from": 0.238,
+            "to": 0.234
+          }
+        ]
+      },
+      {
+        "name": "DeepSeek V4 Flash 0420 (Max)",
+        "creator": "DeepSeek",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.168,
+            "to": 0.142
+          },
+          {
+            "field": "input",
+            "from": 0.13,
+            "to": 0.112
+          },
+          {
+            "field": "output",
+            "from": 0.28,
+            "to": 0.234
+          }
+        ]
+      },
+      {
+        "name": "DeepSeek V4 Flash 0420 (Non-reasoning)",
+        "creator": "DeepSeek",
+        "fields": [
+          {
+            "field": "input",
+            "from": 0.092,
+            "to": 0.094
+          },
+          {
+            "field": "output",
+            "from": 0.191,
+            "to": 0.188
+          }
+        ]
+      },
+      {
+        "name": "DeepSeek V4 Flash 0731 (Max)",
+        "creator": "DeepSeek",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.66,
+            "to": 0.175
+          },
+          {
+            "field": "input",
+            "from": 0.44,
+            "to": 0.14
+          },
+          {
+            "field": "output",
+            "from": 1.32,
+            "to": 0.28
+          }
+        ]
+      },
+      {
+        "name": "ERNIE 4.5 300B A47B",
+        "creator": "Baidu",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.485,
+            "to": null
+          },
+          {
+            "field": "input",
+            "from": 0.28,
+            "to": null
+          },
+          {
+            "field": "output",
+            "from": 1.1,
+            "to": null
+          }
+        ]
+      },
+      {
+        "name": "Gemma 4 31B (Non-reasoning)",
+        "creator": "Google",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.212,
+            "to": 0.224
+          },
+          {
+            "field": "input",
+            "from": 0.15,
+            "to": 0.165
+          }
+        ]
+      },
+      {
+        "name": "gpt-oss-120b (High)",
+        "creator": "OpenAI",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.261,
+            "to": 0.242
+          },
+          {
+            "field": "input",
+            "from": 0.15,
+            "to": 0.125
+          }
+        ]
+      },
+      {
+        "name": "gpt-oss-120b (Low)",
+        "creator": "OpenAI",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.249,
+            "to": 0.223
+          },
+          {
+            "field": "input",
+            "from": 0.15,
+            "to": 0.1
+          },
+          {
+            "field": "output",
+            "from": 0.545,
+            "to": 0.59
+          }
+        ]
+      },
+      {
+        "name": "gpt-oss-20b (High)",
+        "creator": "OpenAI",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.098,
+            "to": 0.097
+          },
+          {
+            "field": "input",
+            "from": 0.07,
+            "to": 0.058
+          },
+          {
+            "field": "output",
+            "from": 0.18,
+            "to": 0.215
+          }
+        ]
+      },
+      {
+        "name": "gpt-oss-20b (Low)",
+        "creator": "OpenAI",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.106,
+            "to": 0.115
+          },
+          {
+            "field": "output",
+            "from": 0.215,
+            "to": 0.25
+          }
+        ]
+      },
+      {
+        "name": "Granite 4.0 H Small",
+        "creator": "IBM",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.107,
+            "to": null
+          },
+          {
+            "field": "input",
+            "from": 0.06,
+            "to": null
+          },
+          {
+            "field": "output",
+            "from": 0.25,
+            "to": null
+          }
+        ]
+      },
+      {
+        "name": "Granite 4.2 30B",
+        "creator": "IBM",
+        "fields": [
+          {
+            "field": "index",
+            "from": 14.8,
+            "to": 12.7
+          }
+        ]
+      },
+      {
+        "name": "Grok 3",
+        "creator": "SpaceXAI",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 8,
+            "to": 6
+          },
+          {
+            "field": "input",
+            "from": 4,
+            "to": 3
+          },
+          {
+            "field": "output",
+            "from": 20,
+            "to": 15
+          }
+        ]
+      },
+      {
+        "name": "Ling-3.0-flash-VL",
+        "creator": "InclusionAI",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.111,
+            "to": null
+          },
+          {
+            "field": "input",
+            "from": 0.075,
+            "to": null
+          },
+          {
+            "field": "output",
+            "from": 0.22,
+            "to": null
+          }
+        ]
+      },
+      {
+        "name": "Llama 3.1 Instruct 8B",
+        "creator": "Meta",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.028,
+            "to": 0.043
+          },
+          {
+            "field": "input",
+            "from": 0.02,
+            "to": 0.035
+          },
+          {
+            "field": "output",
+            "from": 0.05,
+            "to": 0.065
+          }
+        ]
+      },
+      {
+        "name": "Llama 4 Maverick",
+        "creator": "Meta",
+        "fields": [
+          {
+            "field": "index",
+            "from": 10,
+            "to": 9.3
+          },
+          {
+            "field": "blended",
+            "from": 0.422,
+            "to": 0.417
+          },
+          {
+            "field": "input",
+            "from": 0.26,
+            "to": 0.25
+          },
+          {
+            "field": "output",
+            "from": 0.91,
+            "to": 0.92
+          }
+        ]
+      },
+      {
+        "name": "Llama 4 Scout",
+        "creator": "Meta",
+        "fields": [
+          {
+            "field": "index",
+            "from": 8.1,
+            "to": 6.5
+          },
+          {
+            "field": "blended",
+            "from": 0.313,
+            "to": 0.3
+          },
+          {
+            "field": "input",
+            "from": 0.19,
+            "to": 0.18
+          },
+          {
+            "field": "output",
+            "from": 0.68,
+            "to": 0.66
+          }
+        ]
+      },
+      {
+        "name": "LongCat 2.0",
+        "creator": "LongCat",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.525,
+            "to": 1.3
+          },
+          {
+            "field": "input",
+            "from": 0.3,
+            "to": 0.75
+          },
+          {
+            "field": "output",
+            "from": 1.2,
+            "to": 2.95
+          }
+        ]
+      },
+      {
+        "name": "Mercury 2",
+        "creator": "Inception",
+        "fields": [
+          {
+            "field": "index",
+            "from": 13.8,
+            "to": 10.8
+          }
+        ]
+      },
+      {
+        "name": "MiMo-V2.5",
+        "creator": "Xiaomi",
+        "fields": [
+          {
+            "field": "index",
+            "from": 25.2,
+            "to": 21.8
+          }
+        ]
+      },
+      {
+        "name": "Mistral Large 4 Preview",
+        "creator": "Mistral",
+        "fields": [
+          {
+            "field": "params",
+            "from": null,
+            "to": 1000
+          }
+        ]
+      },
+      {
+        "name": "Mistral Small 3.1",
+        "creator": "Mistral",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.125,
+            "to": 0.094
+          },
+          {
+            "field": "input",
+            "from": 0.11,
+            "to": 0.08
+          },
+          {
+            "field": "output",
+            "from": 0.17,
+            "to": 0.135
+          }
+        ]
+      },
+      {
+        "name": "Mistral Small 3.2",
+        "creator": "Mistral",
+        "fields": [
+          {
+            "field": "index",
+            "from": 8.2,
+            "to": 7
+          }
+        ]
+      },
+      {
+        "name": "Muse Glimmer (High)",
+        "creator": "Meta",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.581,
+            "to": 0.525
+          },
+          {
+            "field": "input",
+            "from": 0.325,
+            "to": 0.3
+          },
+          {
+            "field": "output",
+            "from": 1.35,
+            "to": 1.2
+          }
+        ]
+      },
+      {
+        "name": "Nemotron 3 Nano Omni 30B A3B Reasoning",
+        "creator": "NVIDIA",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.42,
+            "to": 0.45
+          },
+          {
+            "field": "input",
+            "from": 0.195,
+            "to": 0.3
+          },
+          {
+            "field": "output",
+            "from": 1.095,
+            "to": 0.9
+          }
+        ]
+      },
+      {
+        "name": "Nemotron 3 Ultra 550B A55B (Reasoning)",
+        "creator": "NVIDIA",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 1.075,
+            "to": 1.125
+          },
+          {
+            "field": "output",
+            "from": 2.5,
+            "to": 2.7
+          }
+        ]
+      },
+      {
+        "name": "Olmo 3 7B Instruct",
+        "creator": "Allen Institute for AI",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.125,
+            "to": null
+          },
+          {
+            "field": "input",
+            "from": 0.1,
+            "to": null
+          },
+          {
+            "field": "output",
+            "from": 0.2,
+            "to": null
+          }
+        ]
+      },
+      {
+        "name": "Phi-4 Mini Instruct",
+        "creator": "Microsoft",
+        "fields": [
+          {
+            "field": "blended",
+            "from": null,
+            "to": 0.131
+          },
+          {
+            "field": "input",
+            "from": null,
+            "to": 0.075
+          },
+          {
+            "field": "output",
+            "from": null,
+            "to": 0.3
+          }
+        ]
+      },
+      {
+        "name": "Phi-4 Multimodal Instruct",
+        "creator": "Microsoft",
+        "fields": [
+          {
+            "field": "blended",
+            "from": null,
+            "to": 0.14
+          },
+          {
+            "field": "input",
+            "from": null,
+            "to": 0.08
+          },
+          {
+            "field": "output",
+            "from": null,
+            "to": 0.32
+          }
+        ]
+      },
+      {
+        "name": "Qwen3 14B (Non-reasoning)",
+        "creator": "Alibaba",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.612,
+            "to": 0.15
+          },
+          {
+            "field": "input",
+            "from": 0.35,
+            "to": 0.12
+          },
+          {
+            "field": "output",
+            "from": 1.4,
+            "to": 0.24
+          }
+        ]
+      },
+      {
+        "name": "Qwen3 14B (Reasoning)",
+        "creator": "Alibaba",
+        "fields": [
+          {
+            "field": "index",
+            "from": 8.2,
+            "to": 6.4
+          },
+          {
+            "field": "blended",
+            "from": 1.313,
+            "to": 0.15
+          },
+          {
+            "field": "input",
+            "from": 0.35,
+            "to": 0.12
+          },
+          {
+            "field": "output",
+            "from": 4.2,
+            "to": 0.24
+          }
+        ]
+      },
+      {
+        "name": "Qwen3 235B A22B (Non-reasoning)",
+        "creator": "Alibaba",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 1.225,
+            "to": null
+          },
+          {
+            "field": "input",
+            "from": 0.7,
+            "to": null
+          },
+          {
+            "field": "output",
+            "from": 2.8,
+            "to": null
+          }
+        ]
+      },
+      {
+        "name": "Qwen3 235B A22B (Reasoning)",
+        "creator": "Alibaba",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 2.625,
+            "to": null
+          },
+          {
+            "field": "input",
+            "from": 0.7,
+            "to": null
+          },
+          {
+            "field": "output",
+            "from": 8.4,
+            "to": null
+          }
+        ]
+      },
+      {
+        "name": "Qwen3 235B A22B 2507 Instruct",
+        "creator": "Alibaba",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.403,
+            "to": 0.385
+          },
+          {
+            "field": "input",
+            "from": 0.23,
+            "to": 0.22
+          },
+          {
+            "field": "output",
+            "from": 0.92,
+            "to": 0.88
+          }
+        ]
+      },
+      {
+        "name": "Qwen3 30B A3B (Non-reasoning)",
+        "creator": "Alibaba",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.35,
+            "to": 0.215
+          },
+          {
+            "field": "input",
+            "from": 0.2,
+            "to": 0.12
+          },
+          {
+            "field": "output",
+            "from": 0.8,
+            "to": 0.5
+          }
+        ]
+      },
+      {
+        "name": "Qwen3 30B A3B (Reasoning)",
+        "creator": "Alibaba",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.75,
+            "to": 0.239
+          },
+          {
+            "field": "input",
+            "from": 0.2,
+            "to": 0.135
+          },
+          {
+            "field": "output",
+            "from": 2.4,
+            "to": 0.55
+          }
+        ]
+      },
+      {
+        "name": "Qwen3 30B A3B 2507 (Reasoning)",
+        "creator": "Alibaba",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.75,
+            "to": 0.595
+          },
+          {
+            "field": "input",
+            "from": 0.2,
+            "to": 0.36
+          },
+          {
+            "field": "output",
+            "from": 2.4,
+            "to": 1.3
+          }
+        ]
+      },
+      {
+        "name": "Qwen3 30B A3B 2507 Instruct",
+        "creator": "Alibaba",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.35,
+            "to": 0.25
+          },
+          {
+            "field": "output",
+            "from": 0.8,
+            "to": 0.4
+          }
+        ]
+      },
+      {
+        "name": "Qwen3 32B (Non-reasoning)",
+        "creator": "Alibaba",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.28,
+            "to": 0.262
+          },
+          {
+            "field": "input",
+            "from": 0.16,
+            "to": 0.15
+          },
+          {
+            "field": "output",
+            "from": 0.64,
+            "to": 0.6
+          }
+        ]
+      },
+      {
+        "name": "Qwen3 32B (Reasoning)",
+        "creator": "Alibaba",
+        "fields": [
+          {
+            "field": "index",
+            "from": 8.6,
+            "to": 7.2
+          },
+          {
+            "field": "blended",
+            "from": 0.28,
+            "to": 0.315
+          },
+          {
+            "field": "input",
+            "from": 0.16,
+            "to": 0.24
+          },
+          {
+            "field": "output",
+            "from": 0.64,
+            "to": 0.54
+          }
+        ]
+      },
+      {
+        "name": "Qwen3 8B (Non-reasoning)",
+        "creator": "Alibaba",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.31,
+            "to": 0.2
+          },
+          {
+            "field": "input",
+            "from": 0.18,
+            "to": 0.2
+          },
+          {
+            "field": "output",
+            "from": 0.7,
+            "to": 0.2
+          }
+        ]
+      },
+      {
+        "name": "Qwen3 8B (Reasoning)",
+        "creator": "Alibaba",
+        "fields": [
+          {
+            "field": "index",
+            "from": 7.3,
+            "to": 5.2
+          },
+          {
+            "field": "blended",
+            "from": 0.66,
+            "to": null
+          },
+          {
+            "field": "input",
+            "from": 0.18,
+            "to": null
+          },
+          {
+            "field": "output",
+            "from": 2.1,
+            "to": null
+          }
+        ]
+      },
+      {
+        "name": "Qwen3 Coder 30B A3B Instruct",
+        "creator": "Alibaba",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.9,
+            "to": 0.3
+          },
+          {
+            "field": "input",
+            "from": 0.45,
+            "to": 0.15
+          },
+          {
+            "field": "output",
+            "from": 2.25,
+            "to": 0.748
+          }
+        ]
+      },
+      {
+        "name": "Qwen3 Coder 480B A35B Instruct",
+        "creator": "Alibaba",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 3,
+            "to": 0.675
+          },
+          {
+            "field": "input",
+            "from": 1.5,
+            "to": 0.3
+          },
+          {
+            "field": "output",
+            "from": 7.5,
+            "to": 1.8
+          }
+        ]
+      },
+      {
+        "name": "Qwen3 Coder Next",
+        "creator": "Alibaba",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.563,
+            "to": 0.482
+          },
+          {
+            "field": "input",
+            "from": 0.35,
+            "to": 0.31
+          },
+          {
+            "field": "output",
+            "from": 1.2,
+            "to": 1
+          }
+        ]
+      },
+      {
+        "name": "Qwen3 Next 80B A3B Instruct",
+        "creator": "Alibaba",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.412,
+            "to": 0.381
+          },
+          {
+            "field": "input",
+            "from": 0.15,
+            "to": 0.125
+          },
+          {
+            "field": "output",
+            "from": 1.2,
+            "to": 1.15
+          }
+        ]
+      },
+      {
+        "name": "Qwen3 VL 235B A22B (Reasoning)",
+        "creator": "Alibaba",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 1.3,
+            "to": null
+          },
+          {
+            "field": "input",
+            "from": 0.4,
+            "to": null
+          },
+          {
+            "field": "output",
+            "from": 4,
+            "to": null
+          }
+        ]
+      },
+      {
+        "name": "Qwen3 VL 235B A22B Instruct",
+        "creator": "Alibaba",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.7,
+            "to": 0.509
+          },
+          {
+            "field": "input",
+            "from": 0.4,
+            "to": 0.215
+          },
+          {
+            "field": "output",
+            "from": 1.6,
+            "to": 1.39
+          }
+        ]
+      },
+      {
+        "name": "Qwen3 VL 30B A3B (Reasoning)",
+        "creator": "Alibaba",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.75,
+            "to": 0.5
+          },
+          {
+            "field": "input",
+            "from": 0.2,
+            "to": 0.5
+          },
+          {
+            "field": "output",
+            "from": 2.4,
+            "to": 0.5
+          }
+        ]
+      },
+      {
+        "name": "Qwen3 VL 30B A3B Instruct",
+        "creator": "Alibaba",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.35,
+            "to": 0.412
+          },
+          {
+            "field": "input",
+            "from": 0.2,
+            "to": 0.35
+          },
+          {
+            "field": "output",
+            "from": 0.8,
+            "to": 0.6
+          }
+        ]
+      },
+      {
+        "name": "Qwen3 VL 32B (Reasoning)",
+        "creator": "Alibaba",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.28,
+            "to": null
+          },
+          {
+            "field": "input",
+            "from": 0.16,
+            "to": null
+          },
+          {
+            "field": "output",
+            "from": 0.64,
+            "to": null
+          }
+        ]
+      },
+      {
+        "name": "Qwen3 VL 32B Instruct",
+        "creator": "Alibaba",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.28,
+            "to": null
+          },
+          {
+            "field": "input",
+            "from": 0.16,
+            "to": null
+          },
+          {
+            "field": "output",
+            "from": 0.64,
+            "to": null
+          }
+        ]
+      },
+      {
+        "name": "Qwen3 VL 8B (Reasoning)",
+        "creator": "Alibaba",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.66,
+            "to": null
+          },
+          {
+            "field": "input",
+            "from": 0.18,
+            "to": null
+          },
+          {
+            "field": "output",
+            "from": 2.1,
+            "to": null
+          }
+        ]
+      },
+      {
+        "name": "Qwen3 VL 8B Instruct",
+        "creator": "Alibaba",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.31,
+            "to": null
+          },
+          {
+            "field": "input",
+            "from": 0.18,
+            "to": null
+          },
+          {
+            "field": "output",
+            "from": 0.7,
+            "to": null
+          }
+        ]
+      },
+      {
+        "name": "QwQ 32B",
+        "creator": "Alibaba",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.745,
+            "to": null
+          },
+          {
+            "field": "input",
+            "from": 0.66,
+            "to": null
+          },
+          {
+            "field": "output",
+            "from": 1,
+            "to": null
+          }
+        ]
+      },
+      {
+        "name": "Ring-flash-2.0",
+        "creator": "InclusionAI",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.247,
+            "to": null
+          },
+          {
+            "field": "input",
+            "from": 0.14,
+            "to": null
+          },
+          {
+            "field": "output",
+            "from": 0.57,
+            "to": null
+          }
+        ]
+      },
+      {
+        "name": "Sarvam 30B (High)",
+        "creator": "Sarvam",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.047,
+            "to": null
+          },
+          {
+            "field": "input",
+            "from": 0.026,
+            "to": null
+          },
+          {
+            "field": "output",
+            "from": 0.11,
+            "to": null
+          }
+        ]
+      }
+    ]
+  },
+  {
     "date": "2026-10-06",
     "added": [
       {

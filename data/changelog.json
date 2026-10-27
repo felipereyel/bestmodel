@@ -1,5 +1,107 @@
 [
   {
+    "date": "2026-10-27",
+    "added": [
+      {
+        "name": "GPT-6.1 Terra (High)",
+        "creator": "OpenAI",
+        "index": 43.9,
+        "blended": 2
+      },
+      {
+        "name": "GPT-6.1 Terra (Low)",
+        "creator": "OpenAI",
+        "index": 36.2,
+        "blended": 2
+      },
+      {
+        "name": "GPT-6.1 Terra (Max)",
+        "creator": "OpenAI",
+        "index": 48.1,
+        "blended": 2
+      },
+      {
+        "name": "GPT-6.1 Terra (Medium)",
+        "creator": "OpenAI",
+        "index": 41.3,
+        "blended": 2
+      },
+      {
+        "name": "GPT-6.1 Terra (Non-reasoning)",
+        "creator": "OpenAI",
+        "index": 33.5,
+        "blended": 2
+      },
+      {
+        "name": "GPT-6.1 Terra (Xhigh)",
+        "creator": "OpenAI",
+        "index": 45.4,
+        "blended": 2
+      }
+    ],
+    "removed": [],
+    "changed": [
+      {
+        "name": "DeepSeek V4.1 Flash (Max)",
+        "creator": "DeepSeek",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.521,
+            "to": 0.525
+          },
+          {
+            "field": "input",
+            "from": 0.295,
+            "to": 0.3
+          }
+        ]
+      },
+      {
+        "name": "Granite 4.2 30B",
+        "creator": "IBM",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.282,
+            "to": null
+          },
+          {
+            "field": "input",
+            "from": 0.16,
+            "to": null
+          },
+          {
+            "field": "output",
+            "from": 0.65,
+            "to": null
+          }
+        ]
+      },
+      {
+        "name": "Llama 3.3 Instruct 70B",
+        "creator": "Meta",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.67,
+            "to": 0.627
+          },
+          {
+            "field": "input",
+            "from": 0.655,
+            "to": 0.6
+          },
+          {
+            "field": "output",
+            "from": 0.715,
+            "to": 0.71
+          }
+        ]
+      }
+    ]
+  },
+  {
     "date": "2026-10-24",
     "added": [
       {

@@ -24,13 +24,13 @@ Inspired by [vps.sonnylab.com/model-value-2026-07](https://vps.sonnylab.com/mode
 
 ## Data sources
 
-The free AA data API (`/api/v2/data/llms/models`) exposes scores, pricing and speed but **not** parameter counts. Total parameters, active parameters, the open-weights flag, context window and licence are read from the React Server Components payload embedded in any AA model detail page (the payload carries the full model dataset). `scripts/fetch-aa.mjs` tries a few candidate model slugs so a rename does not break the run, and degrades gracefully to no parameter metadata if the scrape fails.
+The free AA data API (`/api/v2/language/models/free`) exposes scores, pricing and speed but **not** parameter counts. Total parameters, active parameters, the open-weights flag, context window and licence are read from the React Server Components payload embedded in any AA model detail page (the payload carries the full model dataset). `scripts/fetch-aa.mjs` tries a few candidate model slugs so a rename does not break the run, and degrades gracefully to no parameter metadata if the scrape fails. Total parameters, active parameters, the open-weights flag, context window and licence are read from the React Server Components payload embedded in any AA model detail page (the payload carries the full model dataset). `scripts/fetch-aa.mjs` tries a few candidate model slugs so a rename does not break the run, and degrades gracefully to no parameter metadata if the scrape fails.
 
 Models with a score and either a hosted price **or** open weights + a known parameter count are kept. That second group is what the self-host tab needs: many open-weights models have no hosted API price, but a self-hoster still cares about them.
 
 ## Setup
 
-1. Get a free API key: sign up at https://artificialanalysis.ai/, open the Insights Platform, create an API key (1,000 requests/day, attribution required).
+1. Get a free API key: sign up at https://artificialanalysis.ai/, open the Insights Platform, create an API key (free tier: 100 requests per 24h, attribution required).
 2. Create the GitHub repo and push:
    ```sh
    git init -b main && git add -A && git commit -m "Initial site"
@@ -65,6 +65,8 @@ The page fetches JSON, so open it over HTTP rather than as a `file://` URL.
 
 - The API value frontier is computed client-side for whichever metric is selected (Intelligence, Coding, Math), over the full model set, so filtering by maker shows where that maker's models sit against everyone.
 - The self-host frontier is computed the same way but sorted by total parameters instead of price.
-- Blended price is AA's 3:1 input:output blend. Cached-input, batch and fast-mode pricing are ignored.
+- Everything comes from the free Data API endpoint `/api/v2/language/models/free` (paginated, 200 per page; docs at https://artificialanalysis.ai/data-api/docs). The legacy `/api/v2/data/*` endpoints were retired on 2026-11-04.
+- Blended price is AA's 3:1 input:output blend. The free tier does not expose it directly, so the script computes `(3 × input + output) / 4` from the per-token prices; this matched AA's published figure to 3 dp across the whole legacy snapshot.
+- Cost per task is AA's weighted average cost to complete one Intelligence Index task. It accounts for how many tokens a model actually uses, but AA has measured it for fewer models, so the "Cost per task" view shows a smaller field.
 - Memory bands assume ~4-bit quantisation at roughly 0.55 GB per billion parameters, plus headroom. Actual memory also depends on context and KV cache.
 - Data attribution: Artificial Analysis, https://artificialanalysis.ai/. Required by their API terms.

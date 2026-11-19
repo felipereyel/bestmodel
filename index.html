@@ -165,10 +165,19 @@
   table.budget td.ru b { color: var(--ink); font-weight: 500; }
 
   /* changelog */
-  .log { list-style: none; margin: 0; padding: 0; font-size: 14px; }
-  .log li { padding: 12px 0; border-bottom: 1px solid var(--grid); line-height: 1.6; }
-  .log li:last-child { border-bottom: 0; }
-  .log .d { color: var(--ink-3); font-variant-numeric: tabular-nums; margin-right: 12px; }
+  .log { margin: 0; padding: 0; font-size: 14px; }
+  .log details { border-bottom: 1px solid var(--grid); }
+  .log details:last-child { border-bottom: 0; }
+  .log summary { display: flex; align-items: baseline; gap: 12px; padding: 12px 0; cursor: pointer; list-style: none; line-height: 1.5; user-select: none; }
+  .log summary::-webkit-details-marker { display: none; }
+  .log summary::before { content: "▸"; color: var(--ink-3); font-size: 12px; flex: none; width: 10px; transition: transform .15s; }
+  .log details[open] > summary::before { transform: rotate(90deg); }
+  .log summary:hover .d { color: var(--ink); }
+  .log .d { color: var(--ink-3); font-variant-numeric: tabular-nums; flex: none; }
+  .log .sum { color: var(--ink-2); }
+  .log .sum b { color: var(--ink); font-weight: 600; }
+  .log .body { padding: 0 0 14px 22px; line-height: 1.6; }
+  .log .empty { padding: 12px 0; }
   .up { color: var(--good); font-weight: 600; }
   .down { color: var(--bad); font-weight: 600; }
   .pill { display: inline-block; font-size: 11.5px; padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-ink); margin-right: 6px; font-weight: 500; }
@@ -196,7 +205,7 @@
 <header>
   <div>
     <h1>Which LLM is worth it</h1>
-    <p class="sub">Every model on the <b>Artificial Analysis Intelligence Index</b> plotted against its blended API price. Models on the <b>value frontier</b> are the ones where nothing cheaper is also smarter; everything else is beaten on both counts by a point on the line. By default only the best variant of each model is shown and low scorers are hidden; use the filters to widen the field.</p>
+    <p class="sub">Every model on the <b>Artificial Analysis Intelligence Index</b> plotted against its blended API price, or against what it actually cost per task. Models on the <b>value frontier</b> are the ones where nothing cheaper is also smarter; everything else is beaten on both counts by a point on the line. Low scorers are hidden by default. The price view shows one point per model, since every reasoning setting of a model has the same price per 1M tokens; the cost per task view shows each reasoning setting separately, since they cost very different amounts.</p>
     <p class="meta" id="meta">Loading data…</p>
   </div>
   <div class="hdr-actions">
@@ -211,10 +220,9 @@
 
 <div id="viewApi" role="tabpanel" aria-labelledby="tabApi">
 <div class="filters" id="filters">
-  <div class="seg" role="group" aria-label="Capability metric" id="metricSeg">
-    <button type="button" data-metric="index" aria-pressed="true">Intelligence</button>
-    <button type="button" data-metric="coding" aria-pressed="false">Coding</button>
-    <button type="button" data-metric="math" aria-pressed="false">Math</button>
+  <div class="seg" role="group" aria-label="Cost basis" id="costSeg">
+    <button type="button" data-cost="blended" aria-pressed="true" title="List price: 3:1 input:output blend per 1M tokens">Price per 1M</button>
+    <button type="button" data-cost="task" aria-pressed="false" title="What the model actually cost per Intelligence Index task, counting every token it used">Cost per task</button>
   </div>
   <label>Min score <input type="range" id="minIdx" min="0" max="50" step="5" value="30" aria-label="Minimum index"> <span id="minIdxVal">30</span></label>
   <label title="Keep only the best-scoring effort or reasoning variant of each model"><input type="checkbox" id="collapse" checked> One row per model</label>
@@ -241,7 +249,7 @@
   <p class="cap" id="budgetCap">The frontier as a lookup table. Find the row your budget falls in; the pick is the highest-scoring model you can get at that price, and the runner-up is the next best that also fits.</p>
   <div class="tbl-wrap">
     <table id="budget" class="budget">
-      <thead><tr><th>Budget per 1M tokens</th><th>Pick</th><th>Score</th><th>Price</th><th>Runner-up</th></tr></thead>
+      <thead><tr><th id="budgetHead">Budget per 1M tokens</th><th>Pick</th><th>Score</th><th id="budgetPrice">Price</th><th>Runner-up</th></tr></thead>
       <tbody></tbody>
     </table>
   </div>
@@ -257,7 +265,7 @@
 <div class="card">
   <h2>What changed</h2>
   <p class="cap">Diff between consecutive daily fetches: new models, removed models, and re-scored or re-priced ones.</p>
-  <ul class="log" id="log"></ul>
+  <div class="log" id="log"></div>
 </div>
 
 <div class="card">
@@ -269,8 +277,7 @@
         <th data-k="name" aria-sort="none">Model</th>
         <th data-k="creator" aria-sort="none">Maker</th>
         <th data-k="index" aria-sort="descending">Intelligence</th>
-        <th data-k="coding" aria-sort="none">Coding</th>
-        <th data-k="math" aria-sort="none">Math</th>
+        <th data-k="task" aria-sort="none" title="Weighted average cost to complete one Intelligence Index task">Cost/task</th>
         <th data-k="blended" aria-sort="none">Blended $/1M</th>
         <th data-k="input" aria-sort="none">Input $/1M</th>
         <th data-k="output" aria-sort="none">Output $/1M</th>
@@ -288,7 +295,10 @@
     <ul>
       <li><b>Value frontier.</b> Sort by price ascending and keep every model that scores higher than everything cheaper. Ties on price go to the higher score; ties on score go to the cheaper model.</li>
       <li><b>Blended price</b> is Artificial Analysis's 3:1 input:output blend per 1M tokens. Cached-input discounts, batch pricing and fast modes are not included.</li>
-      <li><b>"One row per model"</b> keeps the highest-scoring effort or reasoning variant of each model name (ties go to the cheaper one). Untick it to see every variant AA benchmarks separately, such as low, medium, high, xhigh and max effort.</li>
+      <li><b>Cost per task</b> is not calculated here. It is Artificial Analysis's own figure, taken as published from their data API: the weighted average cost in USD to complete one Intelligence Index task. AA runs the full Index, takes the token counts reported by the provider (input, cached input, reasoning and answer tokens), prices them at the model's per-token rates, and weights each benchmark the same way the Index does. Two models with the same price per 1M tokens can differ several times over, because one spends far more tokens to reach its answer.</li>
+      <li><b>Reasoning settings are separate rows.</b> AA benchmarks each effort level (low, medium, high, xhigh, max, non-reasoning) as its own model, with its own score and its own cost per task. Every figure on this page belongs to one specific setting, named in the tooltip and the tables. Higher effort usually scores higher and costs much more per task, while the price per 1M tokens stays the same.</li>
+      <li><b>Limits of cost per task.</b> AA has measured it for fewer models, so that view shows a smaller field. It reflects AA's benchmark workload, not yours.</li>
+      <li><b>"One row per model"</b> keeps the highest-scoring effort or reasoning variant of each model name (ties go to the cheaper one). It is on by default in the price view, where a model's reasoning settings all share one price and would only stack on top of each other, and off by default in the cost per task view. There, ticking it hides detail that matters: the top-scoring variant is usually the highest effort and the most expensive, and a lower effort setting of the same model is often better value.</li>
       <li><b>"Min score"</b> hides models below that index from both the chart and the frontier calculation, so an old, tiny model at a rock-bottom price does not anchor the line.</li>
       <li><b>Scores move.</b> AA re-bases the Index between versions, so compare against this page only, not against an older snapshot.</li>
     </ul>
@@ -391,9 +401,13 @@
   const NS = "http://www.w3.org/2000/svg";
   const el = (t, a = {}) => { const n = document.createElementNS(NS, t); for (const k in a) n.setAttribute(k, a[k]); return n; };
   const h = (t, cls, text) => { const n = document.createElement(t); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
-  const money = (v) => v == null ? "—" : "$" + (v >= 10 ? v.toFixed(2) : v >= 1 ? v.toFixed(2) : v.toFixed(v < 0.1 ? 3 : 2));
+  const money = (v) => v == null ? "—" : "$" + v.toFixed(v < 0.01 ? 4 : v < 0.1 ? 3 : 2);
   const num = (v, dp = 0) => v == null ? "—" : (+v).toFixed(dp);
-  const METRIC_LABEL = { index: "Intelligence Index", coding: "Coding Index", math: "Math Index" };
+  const METRIC = "Intelligence Index";
+  const COST = {
+    blended: { title: "price", unit: "per 1M tokens", axis: "Blended price per 1M tokens (log scale)", cap: "Blended cost per 1M tokens (3:1 input:output, log scale)", col: "Price" },
+    task: { title: "cost per task", unit: "per task", axis: "Cost per Intelligence Index task (log scale)", cap: "Cost to complete one Intelligence Index task (all tokens used, log scale)", col: "Cost/task" },
+  };
 
   /* ---------- load ---------- */
   let snapshot, changelog = [];
@@ -418,7 +432,7 @@
   $("src2").textContent = snapshot.attribution || "";
 
   /* ---------- state ---------- */
-  const state = { metric: "index", minIdx: 30, collapse: true, maker: "", q: "", frontierOnly: false, labelsAll: false, showAllIndex: false, sortK: "index", sortDir: -1 };
+  const state = { cost: "blended", minIdx: 30, collapse: true, collapseSet: false, maker: "", q: "", frontierOnly: false, labelsAll: false, showAllIndex: false, sortK: "index", sortDir: -1 };
 
   // "Claude Opus 5.5 (Adaptive Reasoning, Max Effort, Default Fallback)" -> "Claude Opus 5.5 (max)"
   const baseName = (name) => name.replace(/\s*\([^)]*\)/g, "").trim();
@@ -449,17 +463,17 @@
 
   /* ---------- derive ---------- */
   function compute() {
-    const k = state.metric;
-    let rows = ALL.filter((m) => m[k] != null && m[k] >= state.minIdx).map((m) => ({ ...m, v: m[k] }));
+    const ck = state.cost; // x is the cost the frontier is computed on
+    let rows = ALL.filter((m) => m.index != null && m.index >= state.minIdx && m[ck] > 0).map((m) => ({ ...m, v: m.index, x: m[ck] }));
     if (state.collapse) {
       const best = new Map();
-      rows.forEach((d) => { const b = best.get(d.base); if (!b || d.v > b.v || (d.v === b.v && d.blended < b.blended)) best.set(d.base, d); });
+      rows.forEach((d) => { const b = best.get(d.base); if (!b || d.v > b.v || (d.v === b.v && d.x < b.x)) best.set(d.base, d); });
       rows = [...best.values()];
     }
     rows.forEach((d) => { d.label = state.collapse ? d.base : d.short; });
     // frontier over the whole universe (score + collapse filters) so a maker filter or search shows where those models sit
     const frontier = [];
-    [...rows].sort((a, b) => a.blended - b.blended || b.v - a.v).forEach((d) => {
+    [...rows].sort((a, b) => a.x - b.x || b.v - a.v).forEach((d) => {
       if (!frontier.length || d.v > frontier[frontier.length - 1].v) frontier.push(d);
     });
     const onF = new Set(frontier.map((d) => d.id));
@@ -479,8 +493,9 @@
     tip.appendChild(head);
     if (d.short !== d.name) { const full = h("div", null, d.name); full.style.cssText = "color:var(--ink-3);font-size:11px;margin:-4px 0 7px"; tip.appendChild(full); }
     const rows = [
-      [METRIC_LABEL[state.metric], num(d.v, 1)],
+      [METRIC, num(d.v, 1)],
       ["Blended price", money(d.blended) + " /1M"],
+      ["Cost per task", money(d.task)],
       ["Input / output", money(d.input) + " / " + money(d.output)],
       ["Maker", d.creator],
     ];
@@ -518,7 +533,7 @@
     }
     return out;
   }
-  const fmtTick = (v) => "$" + (v >= 1 ? String(v) : v.toFixed(v < 0.1 ? 2 : 1).replace(/0+$/, "").replace(/\.$/, ""));
+  const fmtTick = (v) => "$" + +v.toPrecision(2);
 
   /* ---------- scatter ---------- */
   function drawScatter(rows, vis, frontier) {
@@ -527,7 +542,7 @@
     const pw = W - M.l - M.r, ph = H - M.t - M.b;
     if (!vis.length) { const t = el("text", { x: W / 2, y: H / 2, "text-anchor": "middle", class: "tick" }); t.textContent = "No models match these filters."; svg.appendChild(t); return; }
 
-    const xs = rows.map((d) => d.blended), ys = rows.map((d) => d.v);
+    const xs = rows.map((d) => d.x), ys = rows.map((d) => d.v);
     const xmin = Math.min(...xs) / 1.5, xmax = Math.max(...xs) * 1.5;
     const x0 = Math.log10(xmin), x1 = Math.log10(xmax);
     const ystep = 5;
@@ -544,11 +559,11 @@
       const t = el("text", { x: X(v), y: M.t + ph + 22, "text-anchor": "middle", class: "tick" }); t.textContent = fmtTick(v); svg.appendChild(t);
     });
     svg.appendChild(el("line", { x1: M.l, x2: M.l + pw, y1: M.t + ph, y2: M.t + ph, stroke: "var(--axis)", "stroke-width": 1 }));
-    const xt = el("text", { x: M.l + pw / 2, y: M.t + ph + 46, "text-anchor": "middle", class: "axis-title" }); xt.textContent = "Blended price per 1M tokens (log scale)"; svg.appendChild(xt);
-    const yt = el("text", { x: 16, y: M.t + ph / 2, "text-anchor": "middle", class: "axis-title", transform: `rotate(-90 16 ${M.t + ph / 2})` }); yt.textContent = "Artificial Analysis " + METRIC_LABEL[state.metric]; svg.appendChild(yt);
+    const xt = el("text", { x: M.l + pw / 2, y: M.t + ph + 46, "text-anchor": "middle", class: "axis-title" }); xt.textContent = COST[state.cost].axis; svg.appendChild(xt);
+    const yt = el("text", { x: 16, y: M.t + ph / 2, "text-anchor": "middle", class: "axis-title", transform: `rotate(-90 16 ${M.t + ph / 2})` }); yt.textContent = "Artificial Analysis " + METRIC; svg.appendChild(yt);
 
     // frontier line (always the full-set frontier, so filtering shows context)
-    const pts = frontier.map((d) => `${X(d.blended)},${Y(d.v)}`).join(" ");
+    const pts = frontier.map((d) => `${X(d.x)},${Y(d.v)}`).join(" ");
     svg.appendChild(el("polyline", { points: pts, fill: "none", stroke: "var(--accent)", "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round", opacity: .38 }));
 
     // draw dominated first so frontier dots sit on top
@@ -557,14 +572,14 @@
     const labelLayer = el("g");
     // frontier labels always win; dominated labels are attempted (best first) and dropped when they would collide,
     // unless "Label every point" is on, in which case they are placed anyway.
-    const dots = vis.map((o) => ({ bx: X(o.blended) - 8, by: Y(o.v) - 8, w: 16, h: 16 }));
+    const dots = vis.map((o) => ({ bx: X(o.x) - 8, by: Y(o.v) - 8, w: 16, h: 16 }));
     const byPriority = [...vis].sort((a, b) => (b.front ? 1 : 0) - (a.front ? 1 : 0) || b.v - a.v);
 
     ordered.forEach((d) => {
-      const cx = X(d.blended), cy = Y(d.v), c = d.front ? "var(--accent)" : "var(--demote)";
+      const cx = X(d.x), cy = Y(d.v), c = d.front ? "var(--accent)" : "var(--demote)";
       svg.appendChild(el("circle", { cx, cy, r: 7.5, fill: "var(--surface)" })); // 2px surface ring
       svg.appendChild(el("circle", { cx, cy, r: 5.5, fill: c }));
-      const hit = el("circle", { cx, cy, r: 14, fill: "transparent", class: "hit", tabindex: "0", role: "img", "aria-label": `${d.short}: ${METRIC_LABEL[state.metric]} ${num(d.v, 1)}, ${money(d.blended)} per 1M tokens` });
+      const hit = el("circle", { cx, cy, r: 14, fill: "transparent", class: "hit", tabindex: "0", role: "img", "aria-label": `${d.short}: ${METRIC} ${num(d.v, 1)}, ${money(d.x)} ${COST[state.cost].unit}` });
       hit.style.cursor = "pointer";
       const ring = el("circle", { cx, cy, r: 10, class: "focus-ring" });
       bindHover(hit, d, () => { const b = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal; return [b.left + cx / vb.width * b.width, b.top + cy / vb.height * b.height]; });
@@ -572,7 +587,7 @@
     });
 
     byPriority.forEach((d) => {
-      const cx = X(d.blended), cy = Y(d.v);
+      const cx = X(d.x), cy = Y(d.v);
       const w = d.label.length * 6.3 + 6, hgt = 13;
       const cands = [
         { x: cx, y: cy - 12, anc: "middle", bx: cx - w / 2, by: cy - 12 - hgt },
@@ -626,7 +641,7 @@
       nameTd.title = d.name;
       if (d.url) { const a = h("a", null, d.short); a.href = d.url; a.target = "_blank"; a.rel = "noopener"; nameTd.appendChild(a); } else nameTd.textContent = d.short;
       tr.appendChild(nameTd);
-      [d.creator, num(d.index, 1), num(d.coding, 1), num(d.math, 1), money(d.blended), money(d.input), money(d.output), num(d.tps), num(d.ttft, 2)].forEach((c) => {
+      [d.creator, num(d.index, 1), money(d.task), money(d.blended), money(d.input), money(d.output), num(d.tps), num(d.ttft, 2)].forEach((c) => {
         const td = h("td", c === "—" ? "na" : "", c); tr.appendChild(td);
       });
       tb.appendChild(tr);
@@ -644,22 +659,22 @@
     const tb = document.querySelector("#budget tbody"); tb.replaceChildren();
     // frontier over the visible set, so a maker filter answers "best <maker> model per budget"
     const fr = [];
-    [...vis].sort((a, b) => a.blended - b.blended || b.v - a.v).forEach((d) => { if (!fr.length || d.v > fr[fr.length - 1].v) fr.push(d); });
+    [...vis].sort((a, b) => a.x - b.x || b.v - a.v).forEach((d) => { if (!fr.length || d.v > fr[fr.length - 1].v) fr.push(d); });
     if (!fr.length) { const tr = h("tr"); tr.appendChild(h("td", "empty", "No models match these filters.")); tb.appendChild(tr); return; }
     fr.slice().reverse().forEach((d) => {
       const i = fr.indexOf(d), next = fr[i + 1];
-      const range = i === 0 && !next ? "any" : i === 0 ? `under ${money(next.blended)}` : next ? `${money(d.blended)} to under ${money(next.blended)}` : `${money(d.blended)} and up`;
-      const pool = vis.filter((o) => o.id !== d.id && (!next || o.blended < next.blended));
-      const ru = pool.sort((a, b) => b.v - a.v || a.blended - b.blended)[0];
+      const range = i === 0 && !next ? "any" : i === 0 ? `under ${money(next.x)}` : next ? `${money(d.x)} to under ${money(next.x)}` : `${money(d.x)} and up`;
+      const pool = vis.filter((o) => o.id !== d.id && (!next || o.x < next.x));
+      const ru = pool.sort((a, b) => b.v - a.v || a.x - b.x)[0];
       const tr = h("tr");
       tr.appendChild(h("td", null, range));
       const pick = h("td", "pick"); pick.title = d.name;
       if (d.url) { const a = h("a", null, d.label); a.href = d.url; a.target = "_blank"; a.rel = "noopener"; pick.appendChild(a); } else pick.textContent = d.label;
       tr.appendChild(pick);
       tr.appendChild(h("td", null, num(d.v, 1)));
-      tr.appendChild(h("td", null, money(d.blended)));
+      tr.appendChild(h("td", null, money(d.x)));
       const rtd = h("td", "ru");
-      if (ru) { rtd.append(h("b", null, ru.label), document.createTextNode(` · ${num(ru.v, 1)} at ${money(ru.blended)}`)); rtd.title = ru.name; } else { rtd.textContent = "—"; rtd.classList.add("na"); }
+      if (ru) { rtd.append(h("b", null, ru.label), document.createTextNode(` · ${num(ru.v, 1)} at ${money(ru.x)}`)); rtd.title = ru.name; } else { rtd.textContent = "—"; rtd.classList.add("na"); }
       tr.appendChild(rtd);
       tb.appendChild(tr);
     });
@@ -678,17 +693,27 @@
     return parts;
   }
   function log() {
-    const ul = $("log"); ul.replaceChildren();
+    const root = $("log"); root.replaceChildren();
     const entries = changelog.filter((e) => e.added?.length || e.removed?.length || e.changed?.length).slice(0, 12);
-    if (!entries.length) { ul.appendChild(h("li", "empty", snapshot.source === "seed" ? "No fetches yet. Once the workflow runs with an API key, changes between days appear here." : "No changes recorded yet.")); return; }
-    entries.forEach((e) => {
-      const li = h("li"); li.appendChild(h("span", "d", e.date));
+    if (!entries.length) { root.appendChild(h("div", "empty", snapshot.source === "seed" ? "No fetches yet. Once the workflow runs with an API key, changes between days appear here." : "No changes recorded yet.")); return; }
+    entries.forEach((e, idx) => {
+      const added = e.added || [], removed = e.removed || [], changed = e.changed || [];
+      const det = h("details"); if (idx === 0) det.open = true;
+      const sm = h("summary"); sm.appendChild(h("span", "d", e.date));
+      const sum = h("span", "sum");
+      const rescored = changed.filter((c) => c.fields.some((f) => f.field === "index")).length;
+      const repriced = changed.filter((c) => c.fields.some((f) => f.field !== "index")).length;
+      const counts = [[added.length, "new"], [removed.length, "removed"], [rescored, "re-scored"], [repriced, "re-priced"]].filter(([n]) => n);
+      counts.forEach(([n, label], i) => { if (i) sum.append(" · "); sum.append(h("b", null, String(n)), " " + label); });
+      sm.appendChild(sum); det.appendChild(sm);
+      const body = h("div", "body");
       const bits = [];
-      (e.added || []).forEach((m) => { const s = h("span"); s.append(h("span", "pill", "new"), document.createTextNode(`${m.name} (${num(m.index, 1)} at ${money(m.blended)})`)); bits.push(s); });
-      (e.removed || []).forEach((m) => { const s = h("span"); s.append(h("span", "pill", "removed"), document.createTextNode(m.name)); bits.push(s); });
-      (e.changed || []).forEach((c) => { const s = h("span"); s.append(document.createTextNode(c.name + ": ")); fmtChange(c).forEach((p, i) => { if (i) s.append(", "); s.appendChild(p); }); bits.push(s); });
-      bits.forEach((b, i) => { if (i) li.append(" · "); li.appendChild(b); });
-      ul.appendChild(li);
+      added.forEach((m) => { const s = h("span"); s.append(h("span", "pill", "new"), document.createTextNode(`${m.name} (${num(m.index, 1)} at ${money(m.blended)})`)); bits.push(s); });
+      removed.forEach((m) => { const s = h("span"); s.append(h("span", "pill", "removed"), document.createTextNode(m.name)); bits.push(s); });
+      changed.forEach((c) => { const s = h("span"); s.append(document.createTextNode(c.name + ": ")); fmtChange(c).forEach((p, i) => { if (i) s.append(", "); s.appendChild(p); }); bits.push(s); });
+      bits.forEach((b, i) => { if (i) body.append(" · "); body.appendChild(b); });
+      det.appendChild(body);
+      root.appendChild(det);
     });
   }
 
@@ -930,21 +955,31 @@
     tipHide();
     const { rows, vis, frontier } = compute();
     $("count").textContent = `${vis.length} of ${rows.length} models · ${frontier.length} on frontier`;
-    $("scatterTitle").textContent = `Performance vs price: ${METRIC_LABEL[state.metric]}`;
-    $("barIndexTitle").textContent = `Raw capability: ${METRIC_LABEL[state.metric]}`;
+    const cost = COST[state.cost];
+    $("scatterTitle").textContent = `Performance vs ${cost.title}: ${METRIC}`;
+    $("scatterCap").textContent = `${cost.cap} against the ${METRIC}. Hover or tab to a point for details.`
+      + (state.cost === "task" ? " Figures are Artificial Analysis's, per reasoning setting." + (state.collapse ? " Only each model's top-scoring setting is shown; untick \"One row per model\" to compare effort levels." : "") : "");
+    $("scatter").setAttribute("aria-label", `Scatter plot of ${METRIC} versus ${cost.title}`);
+    $("budgetHead").textContent = "Budget " + cost.unit;
+    $("budgetPrice").textContent = cost.col;
+    $("budgetCap").textContent = "The frontier as a lookup table. Find the row your budget falls in; the pick is the highest-scoring model you can get at that price, and the runner-up is the next best that also fits."
+      + (state.collapse ? " Scores are for each model's best reasoning setting." : "");
+    $("barIndexTitle").textContent = `Raw capability: ${METRIC}`;
     drawScatter(rows, vis, frontier);
     budgetTable(vis);
-    bars("barIndex", "moreIndex", [...vis].sort((a, b) => b.v - a.v || a.blended - b.blended), "v", (v) => num(v, 1), state.showAllIndex, () => { state.showAllIndex = !state.showAllIndex; render(); });
+    bars("barIndex", "moreIndex", [...vis].sort((a, b) => b.v - a.v || a.x - b.x), "v", (v) => num(v, 1), state.showAllIndex, () => { state.showAllIndex = !state.showAllIndex; render(); });
     table(vis);
   }
 
-  document.querySelectorAll("#metricSeg button").forEach((b) => b.addEventListener("click", () => {
-    state.metric = b.dataset.metric;
-    document.querySelectorAll("#metricSeg button").forEach((o) => o.setAttribute("aria-pressed", o === b ? "true" : "false"));
+  document.querySelectorAll("#costSeg button").forEach((b) => b.addEventListener("click", () => {
+    state.cost = b.dataset.cost;
+    // price per 1M is identical across a model's reasoning settings, cost per task is not; follow that unless the user chose
+    if (!state.collapseSet) { state.collapse = state.cost === "blended"; $("collapse").checked = state.collapse; }
+    document.querySelectorAll("#costSeg button").forEach((o) => o.setAttribute("aria-pressed", o === b ? "true" : "false"));
     render();
   }));
   $("minIdx").addEventListener("input", (e) => { state.minIdx = +e.target.value; $("minIdxVal").textContent = e.target.value; render(); });
-  $("collapse").addEventListener("change", (e) => { state.collapse = e.target.checked; render(); });
+  $("collapse").addEventListener("change", (e) => { state.collapse = e.target.checked; state.collapseSet = true; render(); });
   $("makerSel").addEventListener("change", (e) => { state.maker = e.target.value; render(); });
   $("search").addEventListener("input", (e) => { state.q = e.target.value; render(); });
   $("frontierOnly").addEventListener("change", (e) => { state.frontierOnly = e.target.checked; render(); });

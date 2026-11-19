@@ -1,5 +1,473 @@
 [
   {
+    "date": "2026-11-19",
+    "added": [
+      {
+        "name": "A.X-K2",
+        "creator": "SK Telecom",
+        "index": 9,
+        "blended": null
+      },
+      {
+        "name": "Agnes 2.5 Pro Theta",
+        "creator": "Sapiens AI",
+        "index": 24,
+        "blended": 0.15
+      },
+      {
+        "name": "Apodex 1.1",
+        "creator": "Apodex",
+        "index": 13.7,
+        "blended": 0.975
+      },
+      {
+        "name": "Claude 4.5 Haiku (Reasoning)",
+        "creator": "Anthropic",
+        "index": 7.4,
+        "blended": 2
+      },
+      {
+        "name": "Claude Fable 5.2 (High, Default Fallback)",
+        "creator": "Anthropic",
+        "index": 61.8,
+        "blended": 16
+      },
+      {
+        "name": "Claude Fable 5.2 (Low, Default Fallback)",
+        "creator": "Anthropic",
+        "index": 53.9,
+        "blended": 16
+      },
+      {
+        "name": "Claude Fable 5.2 (Max, Default Fallback)",
+        "creator": "Anthropic",
+        "index": 64.6,
+        "blended": 16
+      },
+      {
+        "name": "Claude Fable 5.2 (Medium, Default Fallback)",
+        "creator": "Anthropic",
+        "index": 56.4,
+        "blended": 16
+      },
+      {
+        "name": "Claude Fable 5.2 (Xhigh, Default Fallback)",
+        "creator": "Anthropic",
+        "index": 62.2,
+        "blended": 16
+      },
+      {
+        "name": "Claude Opus 5 (Max)",
+        "creator": "Anthropic",
+        "index": 44.2,
+        "blended": 10
+      },
+      {
+        "name": "DeepSeek V4 Pro 0813 (High)",
+        "creator": "DeepSeek",
+        "index": 20.8,
+        "blended": 1.98
+      },
+      {
+        "name": "DeepSeek V4 Pro 0813 (Non-reasoning)",
+        "creator": "DeepSeek",
+        "index": 12.6,
+        "blended": 1.98
+      },
+      {
+        "name": "Gemini 4 Argon (Medium)",
+        "creator": "Google",
+        "index": 47.6,
+        "blended": 4
+      },
+      {
+        "name": "Gemini 4 Hydrogen (High)",
+        "creator": "Google",
+        "index": 50.8,
+        "blended": 3
+      },
+      {
+        "name": "Gemini 4 Hydrogen (Low)",
+        "creator": "Google",
+        "index": 26.9,
+        "blended": 3
+      },
+      {
+        "name": "Gemini 4 Hydrogen (Medium)",
+        "creator": "Google",
+        "index": 41.2,
+        "blended": 3
+      },
+      {
+        "name": "Gemini 4 Hydrogen (Xhigh)",
+        "creator": "Google",
+        "index": 53.9,
+        "blended": 3
+      },
+      {
+        "name": "Gemini 4 Neon (High)",
+        "creator": "Google",
+        "index": 59.6,
+        "blended": 6
+      },
+      {
+        "name": "Gemini 4 Neon (Low)",
+        "creator": "Google",
+        "index": 44.1,
+        "blended": 6
+      },
+      {
+        "name": "Gemini 4 Neon (Medium)",
+        "creator": "Google",
+        "index": 54.9,
+        "blended": 6
+      },
+      {
+        "name": "Gemini 4 Neon (Xhigh)",
+        "creator": "Google",
+        "index": 61.4,
+        "blended": 6
+      },
+      {
+        "name": "Gemma 4 31B (Reasoning)",
+        "creator": "Google",
+        "index": 4.4,
+        "blended": null
+      },
+      {
+        "name": "Gemma 4 E4B (Reasoning)",
+        "creator": "Google",
+        "index": 4.8,
+        "blended": 0.04
+      },
+      {
+        "name": "GPT-5.6 Luna (Max)",
+        "creator": "OpenAI",
+        "index": 23.8,
+        "blended": 0.45
+      },
+      {
+        "name": "GPT-6.2 Astra (High)",
+        "creator": "OpenAI",
+        "index": 60.1,
+        "blended": 16
+      },
+      {
+        "name": "GPT-6.2 Astra (Low)",
+        "creator": "OpenAI",
+        "index": 45.7,
+        "blended": 16
+      },
+      {
+        "name": "GPT-6.2 Astra (Max)",
+        "creator": "OpenAI",
+        "index": 62.1,
+        "blended": 16
+      },
+      {
+        "name": "GPT-6.2 Astra (Medium)",
+        "creator": "OpenAI",
+        "index": 57,
+        "blended": 16
+      },
+      {
+        "name": "GPT-6.2 Astra (Xhigh)",
+        "creator": "OpenAI",
+        "index": 61.6,
+        "blended": 16
+      },
+      {
+        "name": "GPT-6.2 Sol (High)",
+        "creator": "OpenAI",
+        "index": 54.9,
+        "blended": 4
+      },
+      {
+        "name": "GPT-6.2 Sol (Low)",
+        "creator": "OpenAI",
+        "index": 40.6,
+        "blended": 4
+      },
+      {
+        "name": "GPT-6.2 Sol (Max)",
+        "creator": "OpenAI",
+        "index": 57.3,
+        "blended": 4
+      },
+      {
+        "name": "GPT-6.2 Sol (Medium)",
+        "creator": "OpenAI",
+        "index": 52.7,
+        "blended": 4
+      },
+      {
+        "name": "GPT-6.2 Sol (Xhigh)",
+        "creator": "OpenAI",
+        "index": 55.7,
+        "blended": 4
+      },
+      {
+        "name": "gpt-oss-120b (High)",
+        "creator": "OpenAI",
+        "index": 3.8,
+        "blended": 0.262
+      },
+      {
+        "name": "Granite 4.2 30B",
+        "creator": "IBM",
+        "index": 5.5,
+        "blended": null
+      },
+      {
+        "name": "Grok 4.6 (Xhigh)",
+        "creator": "SpaceXAI",
+        "index": 31,
+        "blended": 3
+      },
+      {
+        "name": "Inkling (High)",
+        "creator": "Thinking Machines",
+        "index": 11,
+        "blended": 1.763
+      },
+      {
+        "name": "Inkling 2 Small",
+        "creator": "Thinking Machines",
+        "index": 30.6,
+        "blended": 0.475
+      },
+      {
+        "name": "Inkling Small (High)",
+        "creator": "Thinking Machines",
+        "index": 9.6,
+        "blended": 0.525
+      },
+      {
+        "name": "K-EXAONE 2.0",
+        "creator": "LG AI Research",
+        "index": 7.6,
+        "blended": null
+      },
+      {
+        "name": "K2 Horizon 0.9B",
+        "creator": "Institute of Foundation Models",
+        "index": 2.7,
+        "blended": null
+      },
+      {
+        "name": "K2 Horizon 3.7B",
+        "creator": "Institute of Foundation Models",
+        "index": 8,
+        "blended": null
+      },
+      {
+        "name": "K2 Horizon 32B",
+        "creator": "Institute of Foundation Models",
+        "index": 13.9,
+        "blended": null
+      },
+      {
+        "name": "K2 Horizon 7B",
+        "creator": "Institute of Foundation Models",
+        "index": 10.6,
+        "blended": null
+      },
+      {
+        "name": "K2 Horizon MoVA 36B A4B",
+        "creator": "Institute of Foundation Models",
+        "index": 13.8,
+        "blended": null
+      },
+      {
+        "name": "LFM3-1.7B",
+        "creator": "Liquid AI",
+        "index": 6,
+        "blended": 0.11
+      },
+      {
+        "name": "LFM3-VL-2B",
+        "creator": "Liquid AI",
+        "index": 1.7,
+        "blended": 0.2
+      },
+      {
+        "name": "Mistral Medium 3.5",
+        "creator": "Mistral",
+        "index": 4.6,
+        "blended": 3
+      },
+      {
+        "name": "Muse Ember (Max)",
+        "creator": "Meta",
+        "index": 36,
+        "blended": 0.2
+      },
+      {
+        "name": "Muse Ember (Xhigh)",
+        "creator": "Meta",
+        "index": 34.1,
+        "blended": 0.2
+      },
+      {
+        "name": "Muse Wonder (High)",
+        "creator": "Meta",
+        "index": 40.5,
+        "blended": 8
+      },
+      {
+        "name": "North Mini Code",
+        "creator": "Cohere",
+        "index": 3.4,
+        "blended": null
+      },
+      {
+        "name": "Qwen3.8-Flash-Next",
+        "creator": "Alibaba",
+        "index": 28.6,
+        "blended": 0.23
+      },
+      {
+        "name": "Qwen4 Max",
+        "creator": "Alibaba",
+        "index": 42.9,
+        "blended": 2.25
+      },
+      {
+        "name": "Solar Pro 4",
+        "creator": "Upstage",
+        "index": 14.2,
+        "blended": 0.525
+      },
+      {
+        "name": "Tencent Hy4",
+        "creator": "Tencent",
+        "index": 34.6,
+        "blended": 1.251
+      }
+    ],
+    "removed": [],
+    "changed": [
+      {
+        "name": "Gemini 4 Argon (High)",
+        "creator": "Google",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 8,
+            "to": 4
+          },
+          {
+            "field": "input",
+            "from": 4,
+            "to": 2
+          },
+          {
+            "field": "output",
+            "from": 20,
+            "to": 10
+          }
+        ]
+      },
+      {
+        "name": "GLM-5.3-Flash",
+        "creator": "Z AI",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.237,
+            "to": 0.238
+          }
+        ]
+      },
+      {
+        "name": "Granite 4.2 8B",
+        "creator": "IBM",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.107,
+            "to": 0.108
+          }
+        ]
+      },
+      {
+        "name": "Inkling (Xhigh)",
+        "creator": "Thinking Machines",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 1.762,
+            "to": 1.763
+          }
+        ]
+      },
+      {
+        "name": "Mistral Large 4 Preview",
+        "creator": "Mistral",
+        "fields": [
+          {
+            "field": "params",
+            "from": 1000,
+            "to": null
+          }
+        ]
+      },
+      {
+        "name": "Muse Glimmer (High)",
+        "creator": "Meta",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.525,
+            "to": 0.581
+          },
+          {
+            "field": "input",
+            "from": 0.3,
+            "to": 0.325
+          },
+          {
+            "field": "output",
+            "from": 1.2,
+            "to": 1.35
+          }
+        ]
+      },
+      {
+        "name": "Nemotron 3 Ultra 550B A55B (Reasoning)",
+        "creator": "NVIDIA",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 1.125,
+            "to": 1.05
+          },
+          {
+            "field": "output",
+            "from": 2.7,
+            "to": 2.4
+          }
+        ]
+      },
+      {
+        "name": "Nemotron 3.5 Super VL",
+        "creator": "NVIDIA",
+        "fields": [
+          {
+            "field": "blended",
+            "from": 0.275,
+            "to": 0.238
+          },
+          {
+            "field": "input",
+            "from": 0.2,
+            "to": 0.15
+          }
+        ]
+      }
+    ]
+  },
+  {
     "date": "2026-11-04",
     "added": [
       {

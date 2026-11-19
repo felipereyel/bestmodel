@@ -11,6 +11,12 @@
  * blend, so it is computed here from the per-token prices, which matched AA's
  * published figure to 3 dp across the whole legacy snapshot.
  *
+ * Parameter counts and the open-weights flag are not in the free API. They
+ * are scraped from AA's public pages: the release catalogue for the
+ * open-weights list, and per-model detail pages for the metadata itself (see
+ * the scrape section below). This is best effort; if the scrape fails the
+ * run degrades to API-only data.
+ *
  * Also maintains data/changelog.json: per-run diff of models added, removed,
  * or re-scored / re-priced.
  *
@@ -29,16 +35,6 @@ const MODELS_PATH = path.join(DATA_DIR, "models.json");
 const CHANGELOG_PATH = path.join(DATA_DIR, "changelog.json");
 const ENDPOINT = "https://artificialanalysis.ai/api/v2/language/models/free";
 const MAX_PAGES = 50;
-// AA embeds its full per-model metadata (parameter counts, open-weights flag, context,
-// licence) in the React Server Components payload of any model detail page. We scrape
-// one page to get parameter counts, which the free data API does not expose. A few
-// candidate slugs are tried so a model rename or removal does not break the run.
-const META_PAGES = [
-  "https://artificialanalysis.ai/models/qwen3-8-27b",
-  "https://artificialanalysis.ai/models/deepseek-v4-1-flash",
-  "https://artificialanalysis.ai/models/glm-5-3",
-  "https://artificialanalysis.ai/models/kimi-k3",
-];
 const CHANGELOG_MAX = 90;
 
 const apiKey = process.env.AA_API_KEY;
@@ -106,59 +102,140 @@ function normalise(raw, meta) {
 }
 
 /* ---------- parameter metadata scrape (best effort) ---------- */
-const Q = '"';
-const BS = "\\";
 
-// Pull `{id -> {params, activeParams, openWeights, sizeClass, contextTokens, license}}`
-// out of an AA model page's escaped React Server Components payload.
-function extractModelMeta(html) {
-  const idRe = new RegExp(`${BS}${BS}${Q}id${BS}${BS}${Q}:${BS}${BS}${Q}([0-9a-f-]{36})${BS}${BS}${Q}`, "g");
-  const ids = [...html.matchAll(idRe)].map((x) => ({ id: x[1], i: x.index }));
-  const grab = (idx, key) => {
-    const pat = `${BS}${BS}${Q}${key}${BS}${BS}${Q}:(?:${BS}${BS}${Q}([^${BS}${BS}${Q}]*)${BS}${BS}${Q}|([0-9.]+)|(true|false|null))`;
-    const match = html.slice(idx, idx + 4000).match(new RegExp(pat));
-    if (!match) return undefined;
-    if (match[1] !== undefined) return match[1];
-    if (match[3] === "null") return null;
-    if (match[3] === "true") return true;
-    if (match[3] === "false") return false;
-    return match[2] !== undefined ? +match[2] : undefined;
-  };
-  const pRe = new RegExp(`${BS}${BS}${Q}parameters${BS}${BS}${Q}:([0-9.]+|null)`, "g");
+// AA no longer embeds the full model dataset in every page payload. A detail
+// page's RSC payload carries an `initialModels` array (~30 records: the page's
+// model, its effort variants and a rotating featured set), and
+// /models/releases carries a `releases` array with the full catalogue,
+// including the open-weights flag per release. Both are embedded as escaped
+// JSON in the flight data. Strategy: parse the releases catalogue to learn
+// which slugs are open-weights, fetch the detail page of each open-weights
+// model in the snapshot (variant slugs redirect to the release page), and
+// collect per-model metadata keyed by the model uuid, which matches the
+// Data API ids.
+
+function extractJsonArray(text, startIdx) {
+  let i = text.indexOf("[", startIdx);
+  if (i === -1) return null;
+  let depth = 0, j = i;
+  while (j < text.length) {
+    const c = text[j];
+    if (c === '"') {
+      j++;
+      while (j < text.length) {
+        if (text[j] === "\\") { j += 2; continue; }
+        if (text[j] === '"') break;
+        j++;
+      }
+    } else if (c === "[") depth++;
+    else if (c === "]") {
+      depth--;
+      if (depth === 0) return text.slice(i, j + 1);
+    }
+    j++;
+  }
+  return null;
+}
+
+// The balanced scan may overrun into sibling flight data, so on "trailing
+// data" errors trim to the position JSON parsing reports as the end of the
+// first value.
+function tryParseJson(cand) {
+  try { return JSON.parse(cand); } catch (err) {
+    const m = /after JSON at position (\d+)/.exec(err.message);
+    if (m) { try { return JSON.parse(cand.slice(0, +m[1])); } catch {} }
+  }
+  return null;
+}
+
+function parseEmbeddedArray(html, key) {
+  const needle = `\\"${key}\\":[`;
+  let idx = html.indexOf(needle);
+  while (idx !== -1) {
+    const raw = extractJsonArray(html, idx + needle.length - 1);
+    if (raw) {
+      const v = tryParseJson(raw) ?? tryParseJson(raw.replaceAll('\\"', '"'));
+      if (Array.isArray(v)) return v;
+    }
+    idx = html.indexOf(needle, idx + 1);
+  }
+  return null;
+}
+
+function recordsToMeta(records) {
   const recs = new Map();
-  let m;
-  while ((m = pRe.exec(html))) {
-    let cand = null;
-    for (const x of ids) { if (x.i < m.index) cand = x; else break; }
-    if (!cand || recs.has(cand.id)) continue;
-    recs.set(cand.id, {
-      params: m[1] === "null" ? null : +m[1],
-      activeParams: grab(cand.i, "inferenceParametersActiveBillions"),
-      openWeights: grab(cand.i, "isOpenWeights"),
-      sizeClass: grab(cand.i, "sizeClass"),
-      contextTokens: grab(cand.i, "contextWindowTokens"),
-      license: grab(cand.i, "licenseName"),
+  for (const r of records ?? []) {
+    if (typeof r?.id !== "string" || !/^[0-9a-f-]{36}$/.test(r.id) || recs.has(r.id)) continue;
+    recs.set(r.id, {
+      params: r.parameters ?? null,
+      activeParams: r.inferenceParametersActiveBillions ?? null,
+      openWeights: r.isOpenWeights ?? null,
+      sizeClass: r.sizeClass ?? null,
+      contextTokens: r.contextWindowTokens ?? null,
+      license: r.licenseName ?? null,
     });
   }
   return recs;
 }
 
-async function fetchModelMeta() {
-  let lastErr = "no candidate pages";
-  for (const url of META_PAGES) {
-    try {
-      const res = await fetch(url, { headers: { accept: "text/html" } });
-      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-      const meta = extractModelMeta(await res.text());
-      if (meta.size < 50) throw new Error(`only ${meta.size} records parsed`);
-      console.log(`Parameter metadata: ${meta.size} models (${[...meta.values()].filter((x) => x.openWeights).length} open weights) from ${url}.`);
-      return meta;
-    } catch (err) {
-      lastErr = err.message;
+async function fetchText(url) {
+  const res = await fetch(url, { headers: { accept: "text/html" }, signal: AbortSignal.timeout(45000) });
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+  return res.text();
+}
+
+async function pool(items, n, fn) {
+  const results = [];
+  let i = 0;
+  await Promise.all(Array.from({ length: Math.min(n, items.length) }, async () => {
+    while (i < items.length) {
+      const k = i++;
+      results[k] = await fn(items[k]).catch(() => null);
     }
+  }));
+  return results;
+}
+
+async function fetchModelMeta(data) {
+  let releases;
+  try {
+    releases = parseEmbeddedArray(await fetchText("https://artificialanalysis.ai/models/releases"), "releases");
+  } catch (err) {
+    console.warn(`WARN: could not fetch release catalogue (${err.message}); continuing without parameter metadata.`);
+    return new Map();
   }
-  console.warn(`WARN: could not fetch parameter metadata (${lastErr}); continuing without it.`);
-  return new Map();
+  const openSlugs = new Set((releases ?? []).filter((r) => r?.slug && r.isOpenWeights === true).map((r) => r.slug));
+  if (!openSlugs.size) {
+    console.warn("WARN: release catalogue parsed but no open-weights releases found; continuing without parameter metadata.");
+    return new Map();
+  }
+
+  // Which detail pages to fetch: one per open-weights release represented in
+  // the snapshot. Variant slugs (effort / reasoning suffixes) redirect to the
+  // release page, so strip trailing segments until the slug is a known
+  // open-weights release.
+  const pages = new Set();
+  for (const raw of data) {
+    if (raw.evaluations?.artificial_analysis_intelligence_index == null) continue;
+    let slug = raw.slug;
+    for (let i = 0; i < 4 && !openSlugs.has(slug); i++) {
+      const cut = slug.lastIndexOf("-");
+      if (cut === -1) break;
+      slug = slug.slice(0, cut);
+    }
+    if (openSlugs.has(slug)) pages.add(slug);
+  }
+
+  const metas = new Map();
+  let fetched = 0;
+  const slugs = [...pages];
+  await pool(slugs, 8, async (slug) => {
+    const records = parseEmbeddedArray(await fetchText(`https://artificialanalysis.ai/models/${slug}`), "initialModels");
+    fetched++;
+    for (const [id, meta] of recordsToMeta(records)) if (!metas.has(id)) metas.set(id, meta);
+  });
+  console.log(`Parameter metadata: ${metas.size} models from ${fetched}/${slugs.length} detail pages.`);
+  return metas;
 }
 
 async function readJson(p, fallback) {
@@ -194,7 +271,7 @@ const stableKey = (models) => JSON.stringify(models.map((m) => {
 async function main() {
   const { data, indexVersion } = await fetchAllModels();
 
-  const meta = await fetchModelMeta();
+  const meta = await fetchModelMeta(data);
 
   // Keep models with a score and either a hosted price or open weights + a parameter
   // count. The latter gives self-hosters a target even when no provider lists a price.

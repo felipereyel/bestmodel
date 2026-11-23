@@ -1,5 +1,18 @@
 [
   {
+    "date": "2026-11-23",
+    "added": [
+      {
+        "name": "Ling-3.2-air",
+        "creator": "InclusionAI",
+        "index": 23.4,
+        "blended": null
+      }
+    ],
+    "removed": [],
+    "changed": []
+  },
+  {
     "date": "2026-11-20",
     "added": [
       {

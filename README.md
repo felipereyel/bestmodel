@@ -63,8 +63,9 @@ The page fetches JSON, so open it over HTTP rather than as a `file://` URL.
 
 ## Notes
 
-- The API value frontier is computed client-side for whichever metric is selected (Intelligence, Coding, Math), over the full model set, so filtering by maker shows where that maker's models sit against everyone.
-- The self-host frontier is computed the same way but sorted by total parameters instead of price.
+- The API value frontier is computed client-side on the Intelligence Index for whichever cost basis is selected (blended price, cost per task), over the full model set, so filtering by maker shows where that maker's models sit against everyone.
+- The self-host frontier is computed the same way but sorted by total parameters instead of price. AA no longer publishes a Coding or Agentic Index, so Intelligence is the only capability metric.
+- Parameter counts and the open-weights flag are not in the free Data API. The script scrapes AA's `/models/releases` catalogue (open-weights list) and each open-weights model's detail page (`initialModels` RSC payload) for parameters, active parameters, size class, context window and licence; if the scrape fails the run degrades to API-only data.
 - Everything comes from the free Data API endpoint `/api/v2/language/models/free` (paginated, 200 per page; docs at https://artificialanalysis.ai/data-api/docs). The legacy `/api/v2/data/*` endpoints were retired on 2026-11-04.
 - Blended price is AA's 3:1 input:output blend. The free tier does not expose it directly, so the script computes `(3 × input + output) / 4` from the per-token prices; this matched AA's published figure to 3 dp across the whole legacy snapshot.
 - Cost per task is AA's weighted average cost to complete one Intelligence Index task. It accounts for how many tokens a model actually uses, but AA has measured it for fewer models, so the "Cost per task" view shows a smaller field.

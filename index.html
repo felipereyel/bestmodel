@@ -310,11 +310,6 @@
 <div id="viewSelf" role="tabpanel" aria-labelledby="tabSelf" hidden>
 
 <div class="filters" id="sfilters">
-  <div class="seg" role="group" aria-label="Capability metric" id="sMetricSeg">
-    <button type="button" data-metric="index" aria-pressed="true">Intelligence</button>
-    <button type="button" data-metric="coding" aria-pressed="false">Coding</button>
-    <button type="button" data-metric="math" aria-pressed="false">Math</button>
-  </div>
   <label>Min score <input type="range" id="sMinIdx" min="0" max="50" step="5" value="10" aria-label="Minimum index"> <span id="sMinIdxVal">10</span></label>
   <label title="Keep only the best-scoring variant of each model"><input type="checkbox" id="sCollapse" checked> One row per model</label>
   <label>Maker <select id="sMakerSel"><option value="">All</option></select></label>
@@ -364,8 +359,6 @@
         <th data-k="name" aria-sort="none">Model</th>
         <th data-k="creator" aria-sort="none">Maker</th>
         <th data-k="index" aria-sort="descending">Intelligence</th>
-        <th data-k="coding" aria-sort="none">Coding</th>
-        <th data-k="math" aria-sort="none">Math</th>
         <th data-k="params" aria-sort="none">Params B</th>
         <th data-k="active_params" aria-sort="none">Active B</th>
         <th data-k="context" aria-sort="none">Context</th>
@@ -456,10 +449,6 @@
 
   const sMakers = [...new Set(OPEN.map((m) => m.creator))].sort((a, b) => a.localeCompare(b));
   sMakers.forEach((mk) => { const o = h("option", null, mk); o.value = mk; $("sMakerSel").appendChild(o); });
-
-  const hasMetric = (k) => ALL.some((m) => m[k] != null);
-  document.querySelectorAll("#metricSeg button").forEach((b) => { if (!hasMetric(b.dataset.metric)) { b.disabled = true; b.title = "Not in this snapshot yet"; b.style.opacity = .45; } });
-  document.querySelectorAll("#sMetricSeg button").forEach((b) => { if (!OPEN.some((m) => m[b.dataset.metric] != null)) { b.disabled = true; b.title = "Not in this snapshot yet"; b.style.opacity = .45; } });
 
   /* ---------- derive ---------- */
   function compute() {
@@ -718,11 +707,10 @@
   }
 
   /* ---------- self-host: state, derive, render ---------- */
-  const sstate = { metric: "index", minIdx: 10, collapse: true, maker: "", q: "", openOnly: true, frontierOnly: false, labelsAll: false, showAll: false, sortK: "index", sortDir: -1 };
+  const sstate = { minIdx: 10, collapse: true, maker: "", q: "", openOnly: true, frontierOnly: false, labelsAll: false, showAll: false, sortK: "index", sortDir: -1 };
 
   function sCompute() {
-    const k = sstate.metric;
-    let rows = OPEN.filter((m) => m[k] != null && m[k] >= sstate.minIdx).map((m) => ({ ...m, v: m[k] }));
+    let rows = OPEN.filter((m) => m.index != null && m.index >= sstate.minIdx).map((m) => ({ ...m, v: m.index }));
     if (sstate.openOnly) rows = rows.filter((m) => m.open_weights === true);
     if (sstate.collapse) {
       const best = new Map();
@@ -783,7 +771,7 @@
     });
     svg.appendChild(el("line", { x1: M.l, x2: M.l + pw, y1: M.t + ph, y2: M.t + ph, stroke: "var(--axis)", "stroke-width": 1 }));
     const xt = el("text", { x: M.l + pw / 2, y: M.t + ph + 46, "text-anchor": "middle", class: "axis-title" }); xt.textContent = "Total parameters (billions, log scale) ≈ memory to hold the weights"; svg.appendChild(xt);
-    const yt = el("text", { x: 16, y: M.t + ph / 2, "text-anchor": "middle", class: "axis-title", transform: `rotate(-90 16 ${M.t + ph / 2})` }); yt.textContent = "Artificial Analysis " + METRIC_LABEL[sstate.metric]; svg.appendChild(yt);
+    const yt = el("text", { x: 16, y: M.t + ph / 2, "text-anchor": "middle", class: "axis-title", transform: `rotate(-90 16 ${M.t + ph / 2})` }); yt.textContent = "Artificial Analysis " + METRIC; svg.appendChild(yt);
 
     const pts = frontier.map((d) => `${X(d.params)},${Y(d.v)}`).join(" ");
     svg.appendChild(el("polyline", { points: pts, fill: "none", stroke: "var(--accent)", "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round", opacity: .38 }));
@@ -798,7 +786,7 @@
       const cx = X(d.params), cy = Y(d.v), c = d.front ? "var(--accent)" : "var(--demote)";
       svg.appendChild(el("circle", { cx, cy, r: 7.5, fill: "var(--surface)" }));
       svg.appendChild(el("circle", { cx, cy, r: 5.5, fill: c }));
-      const hit = el("circle", { cx, cy, r: 14, fill: "transparent", class: "hit", tabindex: "0", role: "img", "aria-label": `${d.short}: ${METRIC_LABEL[sstate.metric]} ${num(d.v, 1)}, ${num(d.params, 1)}B parameters` });
+      const hit = el("circle", { cx, cy, r: 14, fill: "transparent", class: "hit", tabindex: "0", role: "img", "aria-label": `${d.short}: ${METRIC} ${num(d.v, 1)}, ${num(d.params, 1)}B parameters` });
       hit.style.cursor = "pointer";
       const ring = el("circle", { cx, cy, r: 10, class: "focus-ring" });
       bindHover2(hit, d, () => { const b = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal; return [b.left + cx / vb.width * b.width, b.top + cy / vb.height * b.height]; });
@@ -833,7 +821,7 @@
     tip.appendChild(head);
     if (d.short !== d.name) { const full = h("div", null, d.name); full.style.cssText = "color:var(--ink-3);font-size:11px;margin:-4px 0 7px"; tip.appendChild(full); }
     const rows = [
-      [METRIC_LABEL[sstate.metric], num(d.v, 1)],
+      [METRIC, num(d.v, 1)],
       ["Total params", num(d.params, 1) + "B"],
     ];
     if (d.active_params != null) rows.push(["Active params", num(d.active_params, 1) + "B"]);
@@ -899,7 +887,7 @@
       if (d.url) { const a = h("a", null, d.short); a.href = d.url; a.target = "_blank"; a.rel = "noopener"; nameTd.appendChild(a); } else nameTd.textContent = d.short;
       if (d.open_weights === true) nameTd.appendChild(h("span", "tag", "open"));
       tr.appendChild(nameTd);
-      const cells = [d.creator, num(d.index, 1), num(d.coding, 1), num(d.math, 1), num(d.params, 1), num(d.active_params, 1), d.context != null ? num(d.context / 1000, 0) + "k" : "—", d.license || "—"];
+      const cells = [d.creator, num(d.index, 1), num(d.params, 1), num(d.active_params, 1), d.context != null ? num(d.context / 1000, 0) + "k" : "—", d.license || "—"];
       cells.forEach((c) => tr.appendChild(h("td", c === "—" ? "na" : "", c)));
       tb.appendChild(tr);
     });
@@ -915,19 +903,14 @@
     tipHide();
     const { rows, vis, frontier } = sCompute();
     $("sCount").textContent = `${vis.length} of ${rows.length} models · ${frontier.length} on frontier`;
-    $("scatterTitle2").textContent = `What can I run at each memory budget: ${METRIC_LABEL[sstate.metric]}`;
-    $("sbarTitle").textContent = `Raw capability: ${METRIC_LABEL[sstate.metric]}`;
+    $("scatterTitle2").textContent = `What can I run at each memory budget: ${METRIC}`;
+    $("sbarTitle").textContent = `Raw capability: ${METRIC}`;
     drawScatter2(rows, vis, frontier);
     sBands(vis);
     bars("sbar", "sbarMore", [...vis].sort((a, b) => b.v - a.v || a.params - b.params), "v", (v) => num(v, 1), sstate.showAll, () => { sstate.showAll = !sstate.showAll; sRender(); });
     sTable(vis);
   }
 
-  document.querySelectorAll("#sMetricSeg button").forEach((b) => b.addEventListener("click", () => {
-    sstate.metric = b.dataset.metric;
-    document.querySelectorAll("#sMetricSeg button").forEach((o) => o.setAttribute("aria-pressed", o === b ? "true" : "false"));
-    sRender();
-  }));
   $("sMinIdx").addEventListener("input", (e) => { sstate.minIdx = +e.target.value; $("sMinIdxVal").textContent = e.target.value; sRender(); });
   $("sCollapse").addEventListener("change", (e) => { sstate.collapse = e.target.checked; sRender(); });
   $("sMakerSel").addEventListener("change", (e) => { sstate.maker = e.target.value; sRender(); });
